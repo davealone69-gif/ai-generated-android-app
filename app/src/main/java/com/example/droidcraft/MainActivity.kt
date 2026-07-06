@@ -5,12 +5,9 @@ import android.media.ToneGenerator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,25 +15,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import kotlin.math.floor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,91 +39,139 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Memory-safe wrapper for Android ToneGenerator
+class SoundEffectsPlayer {
+    private var toneGen: ToneGenerator? = null
+
+    init {
+        try {
+            toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 85)
+        } catch (e: Exception) {
+            toneGen = null
+        }
+    }
+
+    fun playTick() {
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_PROP_BEEP, 50)
+        } catch (e: Exception) {
+            // Safe fallback
+        }
+    }
+
+    fun playComplete() {
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_CDMA_HIGH_PBX_L, 400)
+        } catch (e: Exception) {
+            // Safe fallback
+        }
+    }
+
+    fun playClick() {
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_PROP_BEEP2, 50)
+        } catch (e: Exception) {
+            // Safe fallback
+        }
+    }
+
+    fun playAlert() {
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 250)
+        } catch (e: Exception) {
+            // Safe fallback
+        }
+    }
+
+    fun release() {
+        toneGen?.release()
+    }
+}
+
+// Preset Colors data structure
+data class ColorPreset(val name: String, val r: Int, val g: Int, val b: Int)
+
 @Composable
 fun MainAppScreen() {
-    // Dynamic Hue Color State (0 - 360)
-    var hue by remember { mutableStateOf(195f) } // Default beautiful Cyan/Blue
-    var saturation by remember { mutableStateOf(0.85f) }
+    // Custom color state (RGB)
+    var r by remember { mutableStateOf(103) } // Indigo Default
+    var g by remember { mutableStateOf(80) }
+    var b by remember { mutableStateOf(164) }
+
+    val themeColor = Color(r, g, b)
     
-    // Convert HSV to Color
-    val pickedColor = remember(hue, saturation) {
-        Color.hsv(hue, saturation, 0.95f)
-    }
-    
-    // Sound FX configurations
-    var isSoundEnabled by remember { mutableStateOf(true) }
-    val toneGenerator = remember {
-        try {
-            ToneGenerator(AudioManager.STREAM_MUSIC, 75)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    // Timer States
-    var totalTimeMs by remember { mutableStateOf(60000L) } // Default 1 minute
-    var timeLeftMs by remember { mutableStateOf(60000L) }
-    var isRunning by remember { mutableStateOf(false) }
-    
-    // Keep track of total time configured separately for progress calculations
-    var configuredTimeMs by remember { mutableStateOf(60000L) }
-
-    // Sound FX helper
-    val playTone = { toneType: Int, duration: Int ->
-        if (isSoundEnabled) {
-            try {
-                toneGenerator?.startTone(toneType, duration)
-            } catch (e: Exception) {
-                // Safely ignore failures in sandbox/emulators
-            }
-        }
-    }
-
-    // Dynamic timer ticker logic
-    LaunchedEffect(isRunning, timeLeftMs) {
-        if (isRunning && timeLeftMs > 0) {
-            val startTickTime = System.currentTimeMillis()
-            delay(40) // fast updates for smooth dynamic UI
-            val elapsed = System.currentTimeMillis() - startTickTime
-            
-            val previousSecond = floor(timeLeftMs / 1000f).toInt()
-            timeLeftMs = (timeLeftMs - elapsed).coerceAtLeast(0L)
-            val currentSecond = floor(timeLeftMs / 1000f).toInt()
-
-            // Play clean periodic ticking sound on each elapsed second
-            if (currentSecond < previousSecond && timeLeftMs > 0) {
-                playTone(ToneGenerator.TONE_CDMA_PIP, 40)
-            }
-        } else if (isRunning && timeLeftMs <= 0L) {
-            isRunning = false
-            // Play triumph finish alarm sound pattern
-            playTone(ToneGenerator.TONE_CDMA_HIGH_L, 400)
-        }
-    }
-
-    // Release helper
-    DisposableEffect(Unit) {
-        onDispose {
-            try {
-                toneGenerator?.release()
-            } catch (e: Exception) {
-                // Ignore release errors
-            }
-        }
-    }
-
-    // Material 3 Custom Theme Wrapper based on selected user dynamic color
-    val darkColorScheme = darkColorScheme(
-        primary = pickedColor,
-        secondary = pickedColor.copy(alpha = 0.7f),
-        tertiary = pickedColor.copy(alpha = 0.5f),
-        background = Color(0xFF0C0E14),
-        surface = Color(0xFF161924),
-        onPrimary = Color.Black,
-        onSurface = Color.White
+    // Animated theme color transitions for dynamic UI responsiveness
+    val animatedThemeColor by animateColorAsState(
+        targetValue = themeColor,
+        animationSpec = tween(durationMillis = 400),
+        label = "ThemeColorAnimation"
     )
 
-    MaterialTheme(colorScheme = darkColorScheme) {
+    // Material 3 Dynamic Dark Palette based on picked color
+    val customColorScheme = darkColorScheme(
+        primary = animatedThemeColor,
+        onPrimary = Color.White,
+        secondary = animatedThemeColor.copy(alpha = 0.8f),
+        onSecondary = Color.White,
+        tertiary = animatedThemeColor.copy(alpha = 0.6f),
+        background = Color(0xFF121212),
+        surface = Color(0xFF1E1E1E),
+        surfaceVariant = Color(0xFF282828),
+        onBackground = Color(0xFFE3E3E3),
+        onSurface = Color(0xFFE3E3E3)
+    )
+
+    // Sound manager setup with safe lifecycle release
+    val soundPlayer = remember { SoundEffectsPlayer() }
+    DisposableEffect(Unit) {
+        onDispose {
+            soundPlayer.release()
+        }
+    }
+
+    // Timer state variables (Default value: 60 seconds)
+    var totalTimeSeconds by remember { mutableStateOf(60) }
+    var secondsLeft by remember { mutableStateOf(60) }
+    var isRunning by remember { mutableStateOf(false) }
+    var enableTickSound by remember { mutableStateOf(true) }
+
+    // Logic for running countdown timer
+    LaunchedEffect(key1 = isRunning, key2 = secondsLeft) {
+        if (isRunning && secondsLeft > 0) {
+            delay(1000L)
+            secondsLeft -= 1
+            if (enableTickSound && secondsLeft > 0) {
+                soundPlayer.playTick()
+            }
+            if (secondsLeft == 0) {
+                isRunning = false
+                soundPlayer.playComplete()
+            }
+        } else if (secondsLeft == 0) {
+            isRunning = false
+        }
+    }
+
+    // UI Formatting Helper
+    fun formatTime(seconds: Int): String {
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        val minStr = if (minutes < 10) "0$minutes" else "$minutes"
+        val secStr = if (remainingSeconds < 10) "0$remainingSeconds" else "$remainingSeconds"
+        return "$minStr:$secStr"
+    }
+
+    // Preset options
+    val colorPresets = listOf(
+        ColorPreset("Indigo", 103, 80, 164),
+        ColorPreset("Sunset", 230, 81, 0),
+        ColorPreset("Emerald", 46, 125, 50),
+        ColorPreset("Teal Glow", 0, 150, 136),
+        ColorPreset("Crimson", 198, 40, 40),
+        ColorPreset("Neon Blue", 33, 150, 243)
+    )
+
+    MaterialTheme(colorScheme = customColorScheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -141,542 +181,561 @@ fun MainAppScreen() {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Top Beautiful Brand Bar
-                AppHeader(pickedColor)
-
-                // Main Timer Card with Visual Radial Glow Indicator
-                TimerCard(
-                    timeLeftMs = timeLeftMs,
-                    totalTimeMs = configuredTimeMs,
-                    pickedColor = pickedColor,
-                    isRunning = isRunning,
-                    onTogglePlay = {
-                        if (timeLeftMs <= 0L) {
-                            // Reset if auto-finished
-                            timeLeftMs = configuredTimeMs
-                        }
-                        isRunning = !isRunning
-                        playTone(ToneGenerator.TONE_CONTAINER, 100)
-                    },
-                    onReset = {
-                        isRunning = false
-                        timeLeftMs = configuredTimeMs
-                        playTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 150)
-                    }
-                )
-
-                // Quick presets & customizable hours/minutes/seconds
-                PresetControlsCard(
-                    pickedColor = pickedColor,
-                    isRunning = isRunning,
-                    onPresetSelect = { presetMs ->
-                        isRunning = false
-                        configuredTimeMs = presetMs
-                        timeLeftMs = presetMs
-                        playTone(ToneGenerator.TONE_PROP_BEEP, 80)
-                    }
-                )
-
-                // Advanced Custom Color Picker Panel
-                ColorPickerCard(
-                    hue = hue,
-                    onHueChange = { hue = it },
-                    saturation = saturation,
-                    onSaturationChange = { saturation = it },
-                    pickedColor = pickedColor
-                )
-
-                // Sound and System Options Card
-                SettingsCard(
-                    isSoundEnabled = isSoundEnabled,
-                    onSoundToggle = {
-                        isSoundEnabled = it
-                        if (isSoundEnabled) {
-                            playTone(ToneGenerator.TONE_PROP_BEEP, 120)
-                        }
-                    },
-                    pickedColor = pickedColor
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AppHeader(accentColor: Color) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(accentColor.copy(alpha = 0.2f))
-                    .border(1.5.dp, accentColor, RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "ChronoGlow Icon",
-                    tint = accentColor,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
+                // Header
                 Text(
-                    text = "ChronoGlow",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White,
-                    letterSpacing = 0.5.sp
+                    text = "DURA-COUNT",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 4.sp
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
                 )
+
                 Text(
-                    text = "Dynamic Sound & Colors",
+                    text = "Interactive Countdown & Dynamic Theme Engine",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
-            }
-        }
 
-        Box(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(Color(0xFF1E2230))
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(accentColor)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "Active Theme",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.LightGray,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TimerCard(
-    timeLeftMs: Long,
-    totalTimeMs: Long,
-    pickedColor: Color,
-    isRunning: Boolean,
-    onTogglePlay: () -> Unit,
-    onReset: () -> Unit
-) {
-    val progress = remember(timeLeftMs, totalTimeMs) {
-        if (totalTimeMs > 0) timeLeftMs.toFloat() / totalTimeMs.toFloat() else 0f
-    }
-
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(16.dp, ambientColor = pickedColor, spotColor = pickedColor),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF161924))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Beautiful Ring & Text
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(240.dp)
-            ) {
-                // Background Shadow glow effect
-                Canvas(modifier = Modifier.size(220.dp)) {
-                    drawCircle(
-                        color = pickedColor.copy(alpha = 0.05f),
-                        radius = size.minDimension / 2.0f
-                    )
-                }
-
-                // Smooth Arc Progress Rim
-                Canvas(modifier = Modifier.size(200.dp)) {
-                    // Base tracking ring
-                    drawCircle(
-                        color = Color(0xFF232838),
-                        style = Stroke(width = 10.dp.toPx(), cap = StrokeCap.Round)
-                    )
-
-                    // Active tracking ring
-                    drawArc(
-                        color = pickedColor,
-                        startAngle = -90f,
-                        sweepAngle = 360f * animatedProgress,
-                        useCenter = false,
-                        style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
-                    )
-                }
-
-                // Digital Timer Counter inside Ring
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val minutes = (timeLeftMs / 1000) / 60
-                    val seconds = (timeLeftMs / 1000) % 60
-                    val millis = (timeLeftMs % 1000) / 10
-
-                    Text(
-                        text = String.format("%02d:%02d", minutes, seconds),
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace,
-                        color = Color.White
-                    )
-                    
-                    Text(
-                        text = String.format(".%02d", millis),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = FontFamily.Monospace,
-                        color = pickedColor
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Action Control Bar
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Reset Button
-                IconButton(
-                    onClick = onReset,
-                    modifier = Modifier
-                        .size(54.dp)
-                        .background(Color(0xFF232838), CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Reset Timer",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(24.dp))
-
-                // Play / Pause glowing core button
-                Button(
-                    onClick = onTogglePlay,
-                    colors = ButtonDefaults.buttonColors(containerColor = pickedColor),
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .shadow(12.dp, shape = CircleShape, ambientColor = pickedColor, spotColor = pickedColor),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isRunning) Icons.Default.Menu else Icons.Default.PlayArrow, // clean visual replacements for play/pause
-                        contentDescription = "Play/Pause Timer",
-                        tint = Color.Black,
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PresetControlsCard(
-    pickedColor: Color,
-    isRunning: Boolean,
-    onPresetSelect: (Long) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF161924))
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            Text(
-                text = "Preset Intervals",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-
-            // Rapid Duration Selectors (Row 1)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val presets = listOf(
-                    "30 Sec" to 30000L,
-                    "1 Min" to 60000L,
-                    "3 Min" to 180000L
-                )
-                presets.forEach { (label, duration) ->
-                    PresetButton(
-                        label = label,
-                        duration = duration,
-                        pickedColor = pickedColor,
-                        onPresetSelect = onPresetSelect,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            // Rapid Duration Selectors (Row 2)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val presets = listOf(
-                    "5 Min" to 300000L,
-                    "10 Min" to 600000L,
-                    "25 Min" to 1500000L
-                )
-                presets.forEach { (label, duration) ->
-                    PresetButton(
-                        label = label,
-                        duration = duration,
-                        pickedColor = pickedColor,
-                        onPresetSelect = onPresetSelect,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PresetButton(
-    label: String,
-    duration: Long,
-    pickedColor: Color,
-    onPresetSelect: (Long) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF232838))
-            .border(1.dp, pickedColor.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
-            .clickable { onPresetSelect(duration) }
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-fun ColorPickerCard(
-    hue: Float,
-    onHueChange: (Float) -> Unit,
-    saturation: Float,
-    onSaturationChange: (Float) -> Unit,
-    pickedColor: Color
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF161924))
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Custom Neon Designer",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                
-                // Color Display Badge
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(pickedColor)
-                        .border(2.dp, Color.White, CircleShape)
-                )
-            }
-
-            // Hue Slider Container
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Hue Accent Color", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                    Text(
-                        text = "${hue.toInt()}°",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = pickedColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Rainbow linear gradient track behind Custom Slider
-                Box(
+                // TIMER INTERFACE CARD
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Red, Color.Yellow, Color.Green,
-                                    Color.Cyan, Color.Blue, Color.Magenta, Color.Red
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "COUNTDOWN TIMER",
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Circular Progress Tracker
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.size(200.dp)
+                        ) {
+                            val progressFactor = if (totalTimeSeconds > 0) {
+                                secondsLeft.toFloat() / totalTimeSeconds.toFloat()
+                            } else {
+                                1f
+                            }
+                            CircularProgressIndicator(
+                                progress = progressFactor,
+                                modifier = Modifier.fillMaxSize(),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 10.dp,
+                                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            )
+
+                            // Timer Numeric String
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = formatTime(secondsLeft),
+                                    style = MaterialTheme.typography.displayMedium.copy(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
+                                Text(
+                                    text = "REMAINING",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                    letterSpacing = 2.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(28.dp))
+
+                        // Primary Control Buttons
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Reset Button
+                            OutlinedButton(
+                                onClick = {
+                                    soundPlayer.playClick()
+                                    isRunning = false
+                                    secondsLeft = totalTimeSeconds
+                                },
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(Icons.Default.Refresh, contentDescription = "Reset")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("RESET")
+                            }
+
+                            // Play / Pause Button
+                            Button(
+                                onClick = {
+                                    soundPlayer.playClick()
+                                    if (secondsLeft <= 0) {
+                                        secondsLeft = totalTimeSeconds
+                                    }
+                                    isRunning = !isRunning
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = if (isRunning) "Pause" else "Play"
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(if (isRunning) "PAUSE" else "START")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Quick duration setup options
+                        Text(
+                            text = "Quick Presets",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            listOf(30, 60, 120, 300, 600).forEach { sec ->
+                                val label = when {
+                                    sec < 60 -> "${sec}s"
+                                    else -> "${sec / 60}m"
+                                }
+                                SuggestionChip(
+                                    onClick = {
+                                        soundPlayer.playClick()
+                                        totalTimeSeconds = sec
+                                        secondsLeft = sec
+                                        isRunning = false
+                                    },
+                                    label = { Text(label) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Continuous duration configuration slider
+                        Text(
+                            text = "Fine Adjustment: ${formatTime(totalTimeSeconds)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        )
+
+                        Slider(
+                            value = totalTimeSeconds.toFloat(),
+                            onValueChange = { value ->
+                                val roundedValue = (value.toInt() / 5) * 5 // snap to 5s increments
+                                totalTimeSeconds = if (roundedValue < 5) 5 else roundedValue
+                                if (!isRunning) {
+                                    secondsLeft = totalTimeSeconds
+                                }
+                            },
+                            valueRange = 5f..1800f, // 5 seconds up to 30 mins
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary
                             )
                         )
-                )
-                
-                Slider(
-                    value = hue,
-                    onValueChange = onHueChange,
-                    valueRange = 0f..360f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = Color.White,
-                        activeTrackColor = Color.Transparent,
-                        inactiveTrackColor = Color.Transparent
-                    ),
-                    modifier = Modifier.offset(y = (-6).dp)
-                )
-            }
-
-            // Saturation Slider Container
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Color Glow Intensity", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                    Text(
-                        text = "${(saturation * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = pickedColor,
-                        fontWeight = FontWeight.Bold
-                    )
+                    }
                 }
-                
-                Slider(
-                    value = saturation,
-                    onValueChange = onSaturationChange,
-                    valueRange = 0.2f..1f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = pickedColor,
-                        activeTrackColor = pickedColor,
-                        inactiveTrackColor = Color(0xFF232838)
-                    )
-                )
-            }
-        }
-    }
-}
 
-@Composable
-fun SettingsCard(
-    isSoundEnabled: Boolean,
-    onSoundToggle: (Boolean) -> Unit,
-    pickedColor: Color
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF161924))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
+                // DYNAMIC COLOR ENGINE CARD (Custom Color Picker)
+                Card(
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF232838)),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
-                    Icon(
-                        imageVector = if (isSoundEnabled) Icons.Default.PlayArrow else Icons.Default.Refresh, // fallback audio states
-                        contentDescription = "Sound Status",
-                        tint = if (isSoundEnabled) pickedColor else Color.Gray,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = "THEME DESIGN ENGINE",
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "Mix RGB elements dynamically or select a palette signature to alter the app's visual identity instantly.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Dynamic Color Preview Badge
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .clip(CircleShape)
+                                    .background(animatedThemeColor)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = "Active Signature Color",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                val hexString = String.format("#%02X%02X%02X", r, g, b)
+                                Text(
+                                    text = "RGB($r, $g, $b) • $hexString",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Preset quick selector
+                        Text(
+                            text = "Designer Palettes",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // First 3 presets
+                            colorPresets.take(3).forEach { preset ->
+                                val isSelected = r == preset.r && g == preset.g && b == preset.b
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(
+                                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                            else MaterialTheme.colorScheme.surfaceVariant
+                                        )
+                                        .clickable {
+                                            soundPlayer.playClick()
+                                            r = preset.r
+                                            g = preset.g
+                                            b = preset.b
+                                        }
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(12.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(preset.r, preset.g, preset.b))
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = preset.name,
+                                            fontSize = 11.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Last 3 presets
+                            colorPresets.drop(3).take(3).forEach { preset ->
+                                val isSelected = r == preset.r && g == preset.g && b == preset.b
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(
+                                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                            else MaterialTheme.colorScheme.surfaceVariant
+                                        )
+                                        .clickable {
+                                            soundPlayer.playClick()
+                                            r = preset.r
+                                            g = preset.g
+                                            b = preset.b
+                                        }
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(12.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(preset.r, preset.g, preset.b))
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = preset.name,
+                                            fontSize = 11.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // RGB Sliders for Custom Color Manipulation
+                        Text(
+                            text = "RGB Custom Sliders",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Red Slider
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "R",
+                                color = Color(239, 83, 80),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.width(20.dp)
+                            )
+                            Slider(
+                                value = r.toFloat(),
+                                onValueChange = { r = it.toInt() },
+                                valueRange = 0f..255f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color(239, 83, 80),
+                                    activeTrackColor = Color(239, 83, 80)
+                                )
+                            )
+                            Text(
+                                text = r.toString(),
+                                modifier = Modifier.width(35.dp),
+                                textAlign = TextAlign.End,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+
+                        // Green Slider
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "G",
+                                color = Color(102, 187, 106),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.width(20.dp)
+                            )
+                            Slider(
+                                value = g.toFloat(),
+                                onValueChange = { g = it.toInt() },
+                                valueRange = 0f..255f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color(102, 187, 106),
+                                    activeTrackColor = Color(102, 187, 106)
+                                )
+                            )
+                            Text(
+                                text = g.toString(),
+                                modifier = Modifier.width(35.dp),
+                                textAlign = TextAlign.End,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+
+                        // Blue Slider
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "B",
+                                color = Color(66, 165, 245),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.width(20.dp)
+                            )
+                            Slider(
+                                value = b.toFloat(),
+                                onValueChange = { b = it.toInt() },
+                                valueRange = 0f..255f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color(66, 165, 245),
+                                    activeTrackColor = Color(66, 165, 245)
+                                )
+                            )
+                            Text(
+                                text = b.toString(),
+                                modifier = Modifier.width(35.dp),
+                                textAlign = TextAlign.End,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = "System Haptic & Sound FX",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Generates high fidelity synthetic tones",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
+
+                // SOUND CONTROL CARD
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = "AUDIO CONTROLLER",
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Audio Configuration Toggle Switch
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Rhythmic Second Tick",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Produces high frequency beep on every second of count",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                )
+                            }
+                            Switch(
+                                checked = enableTickSound,
+                                onCheckedChange = { enableTickSound = it },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Manual Sound Trigger Matrix (Auditory Board)
+                        Text(
+                            text = "Sound Library Test Board",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = { soundPlayer.playTick() },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Tick", fontSize = 12.sp)
+                            }
+
+                            Button(
+                                onClick = { soundPlayer.playClick() },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Click", fontSize = 12.sp)
+                            }
+
+                            Button(
+                                onClick = { soundPlayer.playAlert() },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Alert", fontSize = 12.sp)
+                            }
+
+                            Button(
+                                onClick = { soundPlayer.playComplete() },
+                                modifier = Modifier.weight(1.f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Complete", fontSize = 11.sp, maxLines = 1)
+                            }
+                        }
+                    }
                 }
             }
-
-            Switch(
-                checked = isSoundEnabled,
-                onCheckedChange = onSoundToggle,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = pickedColor,
-                    checkedTrackColor = pickedColor.copy(alpha = 0.4f),
-                    uncheckedThumbColor = Color.Gray,
-                    uncheckedTrackColor = Color(0xFF232838)
-                )
-            )
         }
     }
 }
