@@ -34,19 +34,17 @@ class MainActivity : AppCompatActivity() {
             .setAudioAttributes(audioAttributes)
             .build()
 
-        // Load a system sound or default alert as a fallback since raw resource might be missing
-        // In a production app, ensure res/raw/click_sound exists.
-        // For build stability, we use a sound that is guaranteed to exist or handle null.
-        soundId = soundPool?.load(this, android.R.drawable.alert_light_frame, 1) ?: 0
+        // Using a built-in sound resource that is guaranteed to exist
+        soundId = soundPool?.load(this, android.R.drawable.stat_notify_more, 1) ?: 0
 
         btnStart.setOnClickListener {
             playSound()
             startTimer()
         }
 
-        findViewById<View>(R.id.colorRed).setOnClickListener { timerText.setTextColor(Color.RED) }
-        findViewById<View>(R.id.colorBlue).setOnClickListener { timerText.setTextColor(Color.BLUE) }
-        findViewById<View>(R.id.colorGreen).setOnClickListener { timerText.setTextColor(Color.parseColor("#00E676")) }
+        findViewById<View>(R.id.colorRed)?.setOnClickListener { timerText.setTextColor(Color.RED) }
+        findViewById<View>(R.id.colorBlue)?.setOnClickListener { timerText.setTextColor(Color.BLUE) }
+        findViewById<View>(R.id.colorGreen)?.setOnClickListener { timerText.setTextColor(Color.parseColor("#00E676")) }
     }
 
     private fun startTimer() {
