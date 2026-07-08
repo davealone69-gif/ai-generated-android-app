@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStart: Button
     private lateinit var btnSound: Button
     private var countDownTimer: CountDownTimer? = null
-    private val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+    private val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
