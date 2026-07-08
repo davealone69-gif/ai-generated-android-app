@@ -1,6 +1,8 @@
 package com.example.droidcraft
 
-import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.media.AudioAttributes
+import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -13,7 +15,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTimer: TextView
     private lateinit var tvHeader: TextView
     private lateinit var btnStart: Button
+    private lateinit var btnSound: Button
     private var countDownTimer: CountDownTimer? = null
+    private val toneGenerator = ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 100)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,9 +26,15 @@ class MainActivity : AppCompatActivity() {
         tvTimer = findViewById(R.id.timerDisplay)
         tvHeader = findViewById(R.id.titleHeader)
         btnStart = findViewById(R.id.btnStart)
+        btnSound = findViewById(R.id.btnSound)
 
         btnStart.setOnClickListener {
+            playSound()
             startTimer()
+        }
+
+        btnSound.setOnClickListener {
+            playSound()
         }
 
         setupColorPickers()
@@ -47,13 +57,22 @@ class MainActivity : AppCompatActivity() {
         val colors = listOf(R.id.colorRed, R.id.colorBlue, R.id.colorPurple)
         colors.forEach { id ->
             findViewById<View>(id).setOnClickListener { view ->
-                tvHeader.setTextColor((view.background as android.graphics.drawable.ColorDrawable).color)
+                playSound()
+                val background = view.background
+                if (background is ColorDrawable) {
+                    tvHeader.setTextColor(background.color)
+                }
             }
         }
+    }
+
+    private fun playSound() {
+        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+        toneGenerator.release()
     }
 }
