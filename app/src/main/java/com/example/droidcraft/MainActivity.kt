@@ -34,7 +34,8 @@ class MainActivity : AppCompatActivity() {
         
         soundPool = SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audioAttributes).build()
         
-        // Ensure you have added click.mp3 or click.wav to app/src/main/res/raw/
+        // Note: Ensure a file named click.ogg exists in app/src/main/res/raw/
+        // If missing, create the directory and add a short audio file.
         val resId = resources.getIdentifier("click", "raw", packageName)
         if (resId != 0) {
             soundId = soundPool?.load(this, resId, 1) ?: 0
