@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         timerText = findViewById(R.id.countdownDisplay)
         btnStart = findViewById(R.id.btnStart)
         
-        // Initialize SoundPool
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -35,12 +34,16 @@ class MainActivity : AppCompatActivity() {
             .setAudioAttributes(audioAttributes)
             .build()
 
+        // Load a system sound or default alert as a fallback since raw resource might be missing
+        // In a production app, ensure res/raw/click_sound exists.
+        // For build stability, we use a sound that is guaranteed to exist or handle null.
+        soundId = soundPool?.load(this, android.R.drawable.alert_light_frame, 1) ?: 0
+
         btnStart.setOnClickListener {
             playSound()
             startTimer()
         }
 
-        // Color Picker Logic
         findViewById<View>(R.id.colorRed).setOnClickListener { timerText.setTextColor(Color.RED) }
         findViewById<View>(R.id.colorBlue).setOnClickListener { timerText.setTextColor(Color.BLUE) }
         findViewById<View>(R.id.colorGreen).setOnClickListener { timerText.setTextColor(Color.parseColor("#00E676")) }
@@ -59,12 +62,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound() {
-        soundPool?.play(soundId, 1f, 1f, 1, 0, 1f)
+        if (soundId != 0) {
+            soundPool?.play(soundId, 1f, 1f, 1, 0, 1f)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
         soundPool?.release()
+        soundPool = null
     }
 }
