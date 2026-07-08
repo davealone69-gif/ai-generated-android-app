@@ -1,10 +1,14 @@
 package com.example.droidcraft
 
-import android.media.MediaPlayer
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -12,32 +16,54 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class TimerViewModel : ViewModel() {
-    private val _timeLeft = MutableStateFlow(10L)
-    val timeLeft: StateFlow<Long> = _timeLeft
+class SoundEffectManager(context: Context) {
+    private val soundPool = SoundPool.Builder()
+        .setMaxStreams(1)
+        .setAudioAttributes(
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+        ).build()
+    
+    private val soundId = soundPool.load(context, android.R.drawable.stat_notify_more, 1)
+
+    fun play() = soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
+    fun release() = soundPool.release()
+}
+
+class TimerViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+    private val _timeLeft = savedStateHandle.getStateFlow("time", 10L)
+    val timeLeft = _timeLeft.asStateFlow()
 
     private val _textColor = MutableStateFlow(Color(0xFF6200EE))
-    val textColor: StateFlow<Color> = _textColor
+    val textColor = _textColor.asStateFlow()
 
     private var timerJob: Job? = null
 
     fun startTimer(onFinished: () -> Unit) {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            for (i in 10 downTo 0) {
-                _timeLeft.value = i.toLong()
+            val startTime = SystemClock.elapsedRealtime()
+            val initialSeconds = 10L
+            
+            for (i in initialSeconds downTo 0) {
+                savedStateHandle["time"] = i
                 delay(1000)
             }
             onFinished()
@@ -45,35 +71,21 @@ class TimerViewModel : ViewModel() {
     }
 
     fun randomizeColor() {
-        _textColor.value = Color(
-            red = Random.nextFloat(),
-            green = Random.nextFloat(),
-            blue = Random.nextFloat(),
-            alpha = 1f
-        )
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        timerJob?.cancel()
+        _textColor.value = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
     }
 }
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: TimerViewModel by viewModels()
-    private var mediaPlayer: MediaPlayer? = null
+    private lateinit var soundManager: SoundEffectManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        soundManager = SoundEffectManager(this)
         
-        mediaPlayer = MediaPlayer.create(this, android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)
-
         setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    TimerScreen(viewModel) {
-                        mediaPlayer?.start()
-                    }
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    TimerScreen(onPlaySound = { soundManager.play() })
                 }
             }
         }
@@ -81,45 +93,49 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        soundManager.release()
     }
 }
 
 @Composable
-fun TimerScreen(viewModel: TimerViewModel, playSound: () -> Unit) {
+fun TimerScreen(
+    viewModel: TimerViewModel = viewModel(),
+    onPlaySound: () -> Unit
+) {
     val timeLeft by viewModel.timeLeft.collectAsState()
-    val textColor by viewModel.textColor.collectAsState()
+    val targetColor by viewModel.textColor.collectAsState()
+    val animatedColor by animateColorAsState(targetColor, tween(500), label = "color")
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = if (timeLeft == 0L) "READY!" else "00:${timeLeft.toString().padStart(2, '0')}",
-            fontSize = 64.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor
+            fontSize = 72.sp,
+            fontWeight = FontWeight.Black,
+            color = animatedColor
         )
         
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(64.dp))
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
-                onClick = { viewModel.startTimer(playSound) },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(56.dp).weight(1f)
+                onClick = { viewModel.startTimer(onPlaySound) },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.height(64.dp).weight(1f),
+                elevation = ButtonDefaults.buttonElevation(8.dp)
             ) {
-                Text("Start Timer")
+                Text("Start Timer", fontSize = 16.sp)
             }
 
             OutlinedButton(
                 onClick = { viewModel.randomizeColor() },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(56.dp).weight(1f)
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.height(64.dp).weight(1f)
             ) {
-                Text("Pick Color")
+                Text("Pick Color", fontSize = 16.sp)
             }
         }
     }
