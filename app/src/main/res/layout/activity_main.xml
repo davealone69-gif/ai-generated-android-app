@@ -5,15 +5,15 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Dynamic Timer"
-        android:textColor="#BB86FC"
-        android:textSize="28sp"
+        android:textColor="#00E5FF"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
@@ -23,16 +23,15 @@
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
-        android:textSize="64sp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginBottom="48dp" />
+        android:textSize="72sp"
+        android:fontFamily="sans-serif-light" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="32dp">
+        android:layout_marginTop="32dp">
 
         <Button
             android:id="@+id/btnStart"
@@ -42,25 +41,55 @@
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnSoundToggle"
+            android:id="@+id/btnSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FX Toggle" />
+            android:text="Sound Effect" />
     </LinearLayout>
 
     <View
-        android:id="@+id/colorPreview"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#03DAC5"
-        android:layout_marginBottom="32dp"
-        android:elevation="8dp" />
-
-    <Button
-        android:id="@+id/btnColorPicker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pick Custom Color"
-        android:backgroundTint="#3700B3" />
+        android:layout_height="1dp"
+        android:background="#33FFFFFF"
+        android:layout_marginVertical="32dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Theme Accent Picker"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/colorRed"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/presence_online"
+            android:tint="#FF5252"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:id="@+id/colorBlue"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/presence_online"
+            android:tint="#448AFF"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:id="@+id/colorGreen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/presence_online"
+            android:tint="#69F0AE"
+            android:layout_margin="8dp" />
+
+    </LinearLayout>
 </LinearLayout>
