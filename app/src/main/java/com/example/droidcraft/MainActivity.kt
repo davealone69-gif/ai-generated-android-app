@@ -34,9 +34,8 @@ class MainActivity : AppCompatActivity() {
         
         soundPool = SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audioAttributes).build()
         
-        // Note: Ensure a file named click.ogg exists in app/src/main/res/raw/
-        // If missing, create the directory and add a short audio file.
-        val resId = resources.getIdentifier("click", "raw", packageName)
+        // Load sound safely
+        val resId = resources.getIdentifier("click_sound", "raw", packageName)
         if (resId != 0) {
             soundId = soundPool?.load(this, resId, 1) ?: 0
         }
@@ -56,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         btnSound.setOnClickListener {
             isSoundEnabled = !isSoundEnabled
+            btnSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
         }
 
         val colors = intArrayOf(Color.parseColor("#FF5252"), Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"))
