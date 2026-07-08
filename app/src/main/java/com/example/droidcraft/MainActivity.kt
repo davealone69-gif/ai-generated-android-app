@@ -22,10 +22,11 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStartTimer)
         soundToggle = findViewById(R.id.toggleSound)
 
-        // Robust initialization: verify resource exists before creation to prevent crash
-        val soundId = resources.getIdentifier("click_sound", "raw", packageName)
-        if (soundId != 0) {
-            clickSound = MediaPlayer.create(this, soundId)
+        // Ensure raw resource exists or handle gracefully
+        try {
+            clickSound = MediaPlayer.create(this, R.raw.click_sound)
+        } catch (e: Exception) {
+            clickSound = null
         }
 
         btnStart.setOnClickListener {
@@ -33,7 +34,8 @@ class MainActivity : AppCompatActivity() {
             countDownTimer?.cancel()
             countDownTimer = object : CountDownTimer(30000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    timerText.text = String.format("%02d", millisUntilFinished / 1000)
+                    val seconds = millisUntilFinished / 1000
+                    timerText.text = String.format("%02d", seconds)
                 }
                 override fun onFinish() {
                     timerText.text = "00"
@@ -53,16 +55,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun playSound() {
         if (soundToggle.isChecked && clickSound != null) {
-            try {
-                clickSound?.apply {
-                    if (isPlaying) {
-                        seekTo(0)
-                    } else {
-                        start()
-                    }
+            clickSound?.apply {
+                if (isPlaying) {
+                    pause()
+                    seekTo(0)
                 }
-            } catch (e: Exception) {
-                // Silently handle audio playback failures
+                start()
             }
         }
     }
