@@ -27,14 +27,14 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         btnSound = findViewById(R.id.btnSound)
 
-        // Initialize SoundPool safely
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
+        
         soundPool = SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audioAttributes).build()
         
-        // Load sound safely, 0 indicates failure/missing
+        // Ensure you have added click.mp3 or click.wav to app/src/main/res/raw/
         val resId = resources.getIdentifier("click", "raw", packageName)
         if (resId != 0) {
             soundId = soundPool?.load(this, resId, 1) ?: 0
@@ -55,16 +55,15 @@ class MainActivity : AppCompatActivity() {
 
         btnSound.setOnClickListener {
             isSoundEnabled = !isSoundEnabled
-            playSound()
         }
 
-        // Color Picker Logic
         val colors = intArrayOf(Color.parseColor("#FF5252"), Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"))
         val colorIds = intArrayOf(R.id.colorOption1, R.id.colorOption2, R.id.colorOption3)
         
         for (i in colorIds.indices) {
             findViewById<View>(colorIds[i]).setOnClickListener {
                 timerDisplay.setTextColor(colors[i])
+                playSound()
             }
         }
     }
