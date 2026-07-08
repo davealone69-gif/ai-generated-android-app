@@ -5,26 +5,26 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DroidCraft Timer"
-        android:textColor="#BB86FC"
-        android:textSize="24sp"
+        android:textColor="#00E5FF"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/tvCountdown"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
         android:textSize="72sp"
-        android:textStyle="monospace"
+        android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -45,43 +45,21 @@
             android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Toggle Audio" />
+            android:text="SFX: ON" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <View
+        android:id="@+id/colorPreview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#FF4081"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnPickColor"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select UI Theme Color"
-        android:textColor="#808080"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:id="@+id/colorPickerContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <View
-            android:id="@+id/colorRed"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#CF6679" />
-
-        <View
-            android:id="@+id/colorBlue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#03DAC6" />
-
-        <View
-            android:id="@+id/colorYellow"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#FDD835" />
-
-    </LinearLayout>
+        android:text="Change Theme Color"
+        android:backgroundTint="#3F51B5" />
 
 </LinearLayout>
