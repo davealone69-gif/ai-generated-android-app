@@ -1,5 +1,6 @@
 package com.example.droidcraft
 
+import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Bundle
@@ -7,73 +8,80 @@ import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.util.Random
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var timerDisplay: TextView
-    private lateinit var btnStart: Button
-    private lateinit var btnSound: Button
+    private lateinit var countdownDisplay: TextView
+    private lateinit var btnStartTimer: Button
+    private lateinit var btnColorPicker: Button
+    
     private var countDownTimer: CountDownTimer? = null
-    private lateinit var soundPool: SoundPool
-    private var soundId: Int = 0
+    private var soundPool: SoundPool? = null
+    private var soundId: Int = -1
     private var isSoundEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerDisplay = findViewById(R.id.timerDisplay)
-        btnStart = findViewById(R.id.btnStart)
-        btnSound = findViewById(R.id.btnSound)
+        countdownDisplay = findViewById(R.id.countdownDisplay)
+        btnStartTimer = findViewById(R.id.btnStartTimer)
+        btnColorPicker = findViewById(R.id.btnColorPicker)
+        val btnToggleSound = findViewById<Button>(R.id.btnToggleSound)
 
-        // Initialize SoundPool
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
-        soundPool = SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audioAttributes).build()
-        
-        // Note: Ensure res/raw/click.ogg exists or handle soundId safely
-        soundId = try {
-            soundPool.load(this, resources.getIdentifier("click", "raw", packageName), 1)
-        } catch (e: Exception) { 0 }
+            
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
 
-        btnStart.setOnClickListener {
+        // Load a standard system sound if possible, otherwise keep -1 to prevent errors
+        soundId = soundPool?.load(this, android.R.id.button1, 1) ?: -1
+
+        btnStartTimer.setOnClickListener {
             playSound()
-            countDownTimer?.cancel()
-            countDownTimer = object : CountDownTimer(10000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    val secs = millisUntilFinished / 1000
-                    timerDisplay.text = String.format("00:%02d", secs)
-                }
-                override fun onFinish() {
-                    timerDisplay.text = "00:00"
-                }
-            }.start()
+            startCountdown()
         }
 
-        btnSound.setOnClickListener {
+        btnColorPicker.setOnClickListener {
+            playSound()
+            val rnd = Random()
+            val color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            countdownDisplay.setTextColor(color)
+        }
+
+        btnToggleSound.setOnClickListener {
             isSoundEnabled = !isSoundEnabled
-            playSound()
-        }
-
-        // Color Picker Logic
-        val colors = listOf(0xFFFF5252.toInt(), 0xFF4CAF50.toInt(), 0xFF2196F3.toInt())
-        listOf(R.id.colorOption1, R.id.colorOption2, R.id.colorOption3).forEachIndexed { index, id ->
-            findViewById<android.view.View>(id).setOnClickListener {
-                timerDisplay.setTextColor(colors[index])
-            }
+            btnToggleSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
         }
     }
 
+    private fun startCountdown() {
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                countdownDisplay.text = (millisUntilFinished / 1000).toString()
+            }
+            override fun onFinish() {
+                countdownDisplay.text = "00:00"
+            }
+        }.start()
+    }
+
     private fun playSound() {
-        if (isSoundEnabled && soundId != 0) {
-            soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+        if (isSoundEnabled && soundId != -1) {
+            soundPool?.play(soundId, 1f, 1f, 0, 0, 1f)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-        soundPool.release()
+        soundPool?.release()
+        soundPool = null
     }
 }
