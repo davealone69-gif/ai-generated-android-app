@@ -1,68 +1,104 @@
 package com.example.droidcraft
 
-import android.graphics.Color
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var timerText: TextView
-    private lateinit var btnStart: Button
-    private lateinit var soundToggle: CheckBox
-    private var countDownTimer: CountDownTimer? = null
-    private var clickSound: MediaPlayer? = null
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        timerText = findViewById(R.id.countdownDisplay)
-        btnStart = findViewById(R.id.btnStartTimer)
-        soundToggle = findViewById(R.id.toggleSound)
-
-        // Initialize sound safely (Ensure you have a res/raw/click_sound.mp3 file)
-        clickSound = MediaPlayer.create(this, R.raw.click_sound)
-
-        btnStart.setOnClickListener {
-            playSound()
-            countDownTimer?.cancel()
-            countDownTimer = object : CountDownTimer(30000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    timerText.text = String.format("%02d", millisUntilFinished / 1000)
+        setContent {
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainAppScreen()
                 }
-                override fun onFinish() {
-                    timerText.text = "00"
-                }
-            }.start()
-        }
-
-        // Color picker logic
-        findViewById<ImageButton>(R.id.btnColorRed).setOnClickListener { changeColor(Color.parseColor("#FF5252")) }
-        findViewById<ImageButton>(R.id.btnColorGreen).setOnClickListener { changeColor(Color.parseColor("#69F0AE")) }
-        findViewById<ImageButton>(R.id.btnColorBlue).setOnClickListener { changeColor(Color.parseColor("#448AFF")) }
-    }
-
-    private fun changeColor(color: Int) {
-        playSound()
-        timerText.setTextColor(color)
-    }
-
-    private fun playSound() {
-        if (soundToggle.isChecked) {
-            clickSound?.apply {
-                if (isPlaying) stop()
-                prepareAsync()
-                start()
             }
         }
     }
+}
 
-    override fun onDestroy() {
-        super.onDestroy()
-        countDownTimer?.cancel()
-        clickSound?.release()
-        clickSound = null
+@Composable
+fun MainAppScreen() {
+    var counter by remember { mutableStateOf(0) }
+    var devHandle by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "DroidCraft Live Sandbox",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Text(
+            text = "Build real apps on the fly",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Developer Profile",
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                OutlinedTextField(
+                    value = devHandle,
+                    onValueChange = { devHandle = it },
+                    placeholder = { Text("Enter your developer nickname...") }
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text(
+            text = "Total Runs Compiled: $counter",
+            style = MaterialTheme.typography.titleLarge
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(onClick = { counter++ }) {
+                Text("Increment Count")
+            }
+            
+            Button(
+                onClick = { counter = 0 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Reset")
+            }
+        }
     }
 }
