@@ -7,6 +7,7 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
@@ -15,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStartTimer;
     private Button btnChangeColor;
     private CountDownTimer countDownTimer;
-    private MediaPlayer clickSound;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         btnStartTimer = findViewById(R.id.btnStartTimer);
         btnChangeColor = findViewById(R.id.btnChangeColor);
-
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
         btnStartTimer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                         timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Done!");
+                        timerText.setText("Time's Up!");
                     }
                 }.start();
             }
@@ -49,18 +48,20 @@ public class MainActivity extends AppCompatActivity {
         btnChangeColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
+                Toast.makeText(MainActivity.this, "Interface Color Shifted!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void playSound() {
-        if (clickSound != null) {
-            clickSound.start();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
         }
+        mediaPlayer = MediaPlayer.create(this, R.raw.beep);
+        mediaPlayer.start();
     }
 
     @Override
@@ -69,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        if (clickSound != null) {
-            clickSound.release();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
         }
     }
 }
