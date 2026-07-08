@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
             .setAudioAttributes(audioAttributes)
             .build()
 
-        // Using a standard system sound resource available across all API levels
-        soundId = soundPool?.load(this, android.R.drawable.btn_default, 1) ?: 0
+        // Using a system sound ID for stability without needing external raw assets
+        soundId = soundPool?.load(this, android.R.drawable.btn_radio, 1) ?: 0
 
         btnStart.setOnClickListener {
             playSound()
