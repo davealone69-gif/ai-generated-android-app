@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvTimer;
+    private TextView tvTimer, tvHeader;
     private Button btnStart, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tvTimer = findViewById(R.id.tvTimer);
+        tvHeader = findViewById(R.id.titleHeader);
         btnStart = findViewById(R.id.btnStart);
         btnChangeColor = findViewById(R.id.btnChangeColor);
 
@@ -31,7 +32,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 playSound();
-                startTimer(60000);
+                if (countDownTimer != null) countDownTimer.cancel();
+                
+                countDownTimer = new CountDownTimer(30000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        tvTimer.setText("Time: " + millisUntilFinished / 1000);
+                    }
+                    public void onFinish() {
+                        tvTimer.setText("Done!");
+                    }
+                }.start();
             }
         });
 
@@ -41,23 +51,9 @@ public class MainActivity extends AppCompatActivity {
                 playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                tvTimer.setTextColor(color);
+                tvHeader.setTextColor(color);
             }
         });
-    }
-
-    private void startTimer(long duration) {
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-        countDownTimer = new CountDownTimer(duration, 1000) {
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText("Time: " + millisUntilFinished / 1000 + "s");
-            }
-            public void onFinish() {
-                tvTimer.setText("Done!");
-            }
-        }.start();
     }
 
     private void playSound() {
