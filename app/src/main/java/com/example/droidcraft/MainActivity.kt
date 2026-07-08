@@ -1,89 +1,85 @@
 package com.example.droidcraft
 
+import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.font.FontWeight
+import android.os.CountDownTimer
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import java.util.Random
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var countdownDisplay: TextView
+    private lateinit var btnStartTimer: Button
+    private lateinit var btnColorPicker: Button
+    
+    private var countDownTimer: CountDownTimer? = null
+    private var soundPool: SoundPool? = null
+    private var soundId: Int = 0
+    private var isSoundEnabled = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    VideoMakerStudio()
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+        // Initialize UI components
+        countdownDisplay = findViewById(R.id.countdownDisplay)
+        btnStartTimer = findViewById(R.id.btnStartTimer)
+        btnColorPicker = findViewById(R.id.btnColorPicker)
+        val btnToggleSound = findViewById<Button>(R.id.btnToggleSound)
+
+        // Initialize SoundPool
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+
+        btnStartTimer.setOnClickListener {
+            playSound()
+            startCountdown()
+        }
+
+        btnColorPicker.setOnClickListener {
+            playSound()
+            val rnd = Random()
+            val color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            countdownDisplay.setTextColor(color)
+        }
+
+        btnToggleSound.setOnClickListener {
+            isSoundEnabled = !isSoundEnabled
+            btnToggleSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
         }
     }
-}
 
-@Composable
-fun VideoMakerStudio() {
-    var projectName by remember { mutableStateOf("New AU Project") }
-    var isProcessing by remember { mutableStateOf(false) }
-    val projectSettings = remember { mutableStateListOf("Realistic Rendering", "High Frame Rate", "4K Output") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "AU Video Maker Studio",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = projectName,
-            onValueChange = { projectName = it },
-            label = { Text("Project Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Settings:", style = MaterialTheme.typography.titleMedium)
-
-        LazyColumn(modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
-            items(projectSettings.size) { index ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Text(
-                        text = projectSettings[index],
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+    private fun startCountdown() {
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                countdownDisplay.text = (millisUntilFinished / 1000).toString()
             }
-        }
+            override fun onFinish() {
+                countdownDisplay.text = "Done!"
+            }
+        }.start()
+    }
 
-        Button(
-            onClick = { isProcessing = !isProcessing },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text(if (isProcessing) "Generating Video..." else "Start Realistic Rendering")
+    private fun playSound() {
+        if (isSoundEnabled) {
+            soundPool?.play(soundId, 1f, 1f, 0, 0, 1f)
         }
+    }
 
-        if (isProcessing) {
-            Spacer(modifier = Modifier.height(16.dp))
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
+        soundPool?.release()
+        soundPool = null
     }
 }
