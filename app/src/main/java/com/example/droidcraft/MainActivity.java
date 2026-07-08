@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                         timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Time's up!");
+                        timerText.setText("Done!");
                     }
                 }.start();
             }
