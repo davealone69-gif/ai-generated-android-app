@@ -54,13 +54,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupColorPickers() {
-        val colors = listOf(R.id.colorRed, R.id.colorBlue, R.id.colorPurple)
-        colors.forEach { id ->
+        val colorIds = listOf(R.id.colorRed, R.id.colorBlue, R.id.colorPurple)
+        colorIds.forEach { id ->
             findViewById<View>(id).setOnClickListener { view ->
                 playSound()
-                val background = view.background
-                if (background is ColorDrawable) {
-                    tvHeader.setTextColor(background.color)
+                val color = (view.background as? ColorDrawable)?.color
+                if (color != null) {
+                    tvHeader.setTextColor(color)
                 }
             }
         }
