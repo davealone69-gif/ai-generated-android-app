@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView timerText;
+    private TextView tvTimer, tvHeader;
     private Button btnStart, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
@@ -21,11 +21,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        timerText = findViewById(R.id.timerText);
+        tvTimer = findViewById(R.id.tvTimer);
+        tvHeader = findViewById(R.id.titleHeader);
         btnStart = findViewById(R.id.btnStart);
         btnChangeColor = findViewById(R.id.btnChangeColor);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_effect);
+        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                        tvTimer.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Done!");
+                        tvTimer.setText("Done!");
                     }
                 }.start();
             }
@@ -51,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                timerText.setTextColor(color);
-                btnStart.setBackgroundColor(color);
+                tvHeader.setTextColor(color);
             }
         });
     }
