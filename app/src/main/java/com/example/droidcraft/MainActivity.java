@@ -1,5 +1,6 @@
 package com.example.droidcraft;
 
+import android.app.Application;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
@@ -58,9 +59,9 @@ class MainViewModel extends AndroidViewModel {
     private CountDownTimer timer;
     private final long INITIAL_TIME = 10000;
 
-    public MainViewModel(@NonNull android.app.Application application) {
+    public MainViewModel(@NonNull Application application, SoundEffectProvider soundEffectProvider) {
         super(application);
-        this.audioManager = new SoundEffectManager(application);
+        this.audioManager = soundEffectProvider;
     }
 
     public LiveData<String> getTimerDisplay() { return timerDisplay; }
@@ -73,18 +74,21 @@ class MainViewModel extends AndroidViewModel {
         timer = new CountDownTimer(INITIAL_TIME, 1000) {
             @Override
             public void onTick(long millis) {
-                timerDisplay.postValue((millis / 1000) + "s");
+                timerDisplay.setValue((millis / 1000) + "s");
             }
             @Override
             public void onFinish() {
-                timerDisplay.postValue("Done!");
+                timerDisplay.setValue("Done!");
             }
         }.start();
     }
 
     public void randomizeColor() {
         audioManager.playClick();
-        float[] hsl = new float[]{new Random().nextFloat() * 360f, 0.7f, 0.5f};
+        Random random = new Random();
+        float hue = random.nextFloat() * 360f;
+        // Enforce a saturation and lightness that guarantees contrast against white/light gray backgrounds
+        float[] hsl = new float[]{hue, 0.8f, 0.4f}; 
         textColor.setValue(ColorUtils.HSLToColor(hsl));
     }
 
@@ -103,14 +107,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        SoundEffectProvider soundProvider = new SoundEffectManager(getApplicationContext());
+        
+        ViewModelProvider.Factory factory = new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends androidx.lifecycle.ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new MainViewModel(getApplication(), soundProvider);
+            }
+        };
+
+        MainViewModel viewModel = new ViewModelProvider(this, factory).get(MainViewModel.class);
 
         MaterialTextView timerText = findViewById(R.id.timerText);
         MaterialButton btnStart = findViewById(R.id.btnStartTimer);
         MaterialButton btnColor = findViewById(R.id.btnChangeColor);
-
-        btnStart.setContentDescription(getString(R.string.desc_start_timer));
-        btnColor.setContentDescription(getString(R.string.desc_change_color));
 
         viewModel.getTimerDisplay().observe(this, timerText::setText);
         viewModel.getTextColor().observe(this, timerText::setTextColor);
