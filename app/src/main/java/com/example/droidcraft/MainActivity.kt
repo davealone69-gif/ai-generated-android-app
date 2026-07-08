@@ -4,36 +4,36 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.widget.Button
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var timerText: TextView
     private lateinit var btnStart: Button
-    private lateinit var btnSound: Button
+    private lateinit var soundToggle: CheckBox
     private var countDownTimer: CountDownTimer? = null
-    private var isSoundEnabled = true
-    private var mediaPlayer: MediaPlayer? = null
+    private var clickSound: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerText = findViewById(R.id.countdownTimer)
-        btnStart = findViewById(R.id.btnStart)
-        btnSound = findViewById(R.id.btnSoundToggle)
+        timerText = findViewById(R.id.countdownDisplay)
+        btnStart = findViewById(R.id.btnStartTimer)
+        soundToggle = findViewById(R.id.toggleSound)
 
-        // Initialize click sound placeholder (ToneGenerator could be used if no raw file exists)
-        mediaPlayer = MediaPlayer.create(this, android.R.raw.click) 
+        // Robust initialization: verify resource exists before creation to prevent crash
+        val soundId = resources.getIdentifier("click_sound", "raw", packageName)
+        if (soundId != 0) {
+            clickSound = MediaPlayer.create(this, soundId)
+        }
 
         btnStart.setOnClickListener {
             playSound()
             countDownTimer?.cancel()
-            countDownTimer = object : CountDownTimer(10000, 1000) {
+            countDownTimer = object : CountDownTimer(30000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    timerText.text = String.format(Locale.getDefault(), "%02d", millisUntilFinished / 1000)
+                    timerText.text = String.format("%02d", millisUntilFinished / 1000)
                 }
                 override fun onFinish() {
                     timerText.text = "00"
@@ -41,32 +41,36 @@ class MainActivity : AppCompatActivity() {
             }.start()
         }
 
-        btnSound.setOnClickListener {
-            isSoundEnabled = !isSoundEnabled
-            btnSound.text = if (isSoundEnabled) "FX: On" else "FX: Off"
-        }
+        findViewById<ImageButton>(R.id.btnColorRed).setOnClickListener { changeColor(Color.parseColor("#FF5252")) }
+        findViewById<ImageButton>(R.id.btnColorGreen).setOnClickListener { changeColor(Color.parseColor("#69F0AE")) }
+        findViewById<ImageButton>(R.id.btnColorBlue).setOnClickListener { changeColor(Color.parseColor("#448AFF")) }
+    }
 
-        val colors = listOf(Color.parseColor("#FF5252"), Color.parseColor("#00E676"), Color.parseColor("#2979FF"))
-        val views = listOf(findViewById(R.id.colorOption1), findViewById(R.id.colorOption2), findViewById(R.id.colorOption3))
-        
-        views.forEachIndexed { index, view ->
-            view.setOnClickListener {
-                playSound()
-                timerText.setTextColor(colors[index])
-            }
-        }
+    private fun changeColor(color: Int) {
+        playSound()
+        timerText.setTextColor(color)
     }
 
     private fun playSound() {
-        if (isSoundEnabled) {
-            mediaPlayer?.seekTo(0)
-            mediaPlayer?.start()
+        if (soundToggle.isChecked && clickSound != null) {
+            try {
+                clickSound?.apply {
+                    if (isPlaying) {
+                        seekTo(0)
+                    } else {
+                        start()
+                    }
+                }
+            } catch (e: Exception) {
+                // Silently handle audio playback failures
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-        mediaPlayer?.release()
+        clickSound?.release()
+        clickSound = null
     }
 }
