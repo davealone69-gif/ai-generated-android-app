@@ -1,9 +1,10 @@
 package com.example.droidcraft
 
-import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,8 +25,8 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         val btnSoundToggle = findViewById<Button>(R.id.btnSoundToggle)
 
-        // Initialize sound
-        clickSound = MediaPlayer.create(this, android.R.raw.alert_light) // Using system default as fallback
+        // Initialize sound safely
+        clickSound = MediaPlayer.create(this, android.R.raw.alert_light)
 
         btnStart.setOnClickListener {
             playSound()
@@ -37,13 +38,15 @@ class MainActivity : AppCompatActivity() {
             playSound()
         }
 
-        // Color Picker Logic
-        val colors = listOf(R.id.colorRed, R.id.colorBlue, R.id.colorYellow)
-        colors.forEach { id ->
-            findViewById<android.view.View>(id).setOnClickListener { view ->
-                val color = (view.background as android.graphics.drawable.ColorDrawable).color
-                tvCountdown.setTextColor(color)
-                playSound()
+        // Robust Color Picker Logic
+        val colorIds = listOf(R.id.colorRed, R.id.colorBlue, R.id.colorYellow)
+        colorIds.forEach { id ->
+            findViewById<View>(id).setOnClickListener { view ->
+                val background = view.background
+                if (background is ColorDrawable) {
+                    tvCountdown.setTextColor(background.color)
+                    playSound()
+                }
             }
         }
     }
@@ -62,9 +65,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound() {
-        if (isSoundEnabled) {
-            clickSound?.seekTo(0)
-            clickSound?.start()
+        if (isSoundEnabled && clickSound != null) {
+            try {
+                if (clickSound!!.isPlaying) {
+                    clickSound!!.pause()
+                    clickSound!!.seekTo(0)
+                }
+                clickSound!!.start()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
