@@ -12,8 +12,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStartTimer;
-    private Button btnChangeColor;
+    private Button btnStartTimer, btnColorPicker;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -24,36 +23,30 @@ public class MainActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         btnStartTimer = findViewById(R.id.btnStartTimer);
-        btnChangeColor = findViewById(R.id.btnChangeColor);
+        btnColorPicker = findViewById(R.id.btnColorPicker);
+        
+        clickSound = MediaPlayer.create(this, R.raw.click_effect);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
-
-        btnStartTimer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
+        btnStartTimer.setOnClickListener(v -> {
+            playSound();
+            if (countDownTimer != null) countDownTimer.cancel();
+            
+            countDownTimer = new CountDownTimer(30000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
                 }
-                countDownTimer = new CountDownTimer(10000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
-                    }
-                    public void onFinish() {
-                        timerText.setText("Done!");
-                    }
-                }.start();
-            }
+                public void onFinish() {
+                    timerText.setText("Time's up!");
+                }
+            }.start();
         });
 
-        btnChangeColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                Random rnd = new Random();
-                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                timerText.setTextColor(color);
-            }
+        btnColorPicker.setOnClickListener(v -> {
+            playSound();
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            timerText.setTextColor(color);
+            btnStartTimer.setBackgroundColor(color);
         });
     }
 
@@ -66,11 +59,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-        if (clickSound != null) {
-            clickSound.release();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
