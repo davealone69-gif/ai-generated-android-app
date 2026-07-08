@@ -1,7 +1,7 @@
 package com.example.droidcraft
 
 import android.graphics.drawable.ColorDrawable
-import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStart: Button
     private lateinit var btnSound: Button
     private var countDownTimer: CountDownTimer? = null
-    private val toneGenerator = ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 100)
+    private val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
