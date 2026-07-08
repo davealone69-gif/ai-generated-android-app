@@ -1,50 +1,84 @@
 package com.example.droidcraft;
 
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
-import androidx.activity.viewModels;
+import android.os.CountDownTimer;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.ColorUtils;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.color.MaterialColors;
 import com.google.android.material.textview.MaterialTextView;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
-    private SoundPool soundPool;
-    private int clickSoundId;
+    private AudioManager audioManager;
+
+    public static class AudioManager {
+        private final SoundPool soundPool;
+        private final int clickSoundId;
+
+        public AudioManager(MainActivity activity) {
+            AudioAttributes attrs = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            this.soundPool = new SoundPool.Builder().setMaxStreams(1).setAudioAttributes(attrs).build();
+            this.clickSoundId = soundPool.load(activity, R.raw.click_sound, 1);
+        }
+
+        public void playClick() {
+            soundPool.play(clickSoundId, 1f, 1f, 1, 0, 1f);
+        }
+
+        public void release() {
+            soundPool.release();
+        }
+    }
 
     public static class MainViewModel extends ViewModel {
-        private final MutableLiveData<String> timerDisplay = new MutableLiveData<>("Press Start");
-        private final MutableLiveData<Integer> textColor = new MutableLiveData<>(0xFF000000);
-        private android.os.CountDownTimer timer;
+        private final MutableLiveData<String> timerDisplay = new MutableLiveData<>("Ready");
+        private final MutableLiveData<Integer> textColor = new MutableLiveData<>(Color.DKGRAY);
+        private CountDownTimer timer;
+        private long timeLeft = 10000;
 
         public LiveData<String> getTimerDisplay() { return timerDisplay; }
         public LiveData<Integer> getTextColor() { return textColor; }
 
         public void startTimer() {
             if (timer != null) timer.cancel();
-            timer = new android.os.CountDownTimer(10000, 1000) {
-                public void onTick(long millis) { timerDisplay.setValue("Time: " + millis / 1000); }
-                public void onFinish() { timerDisplay.setValue("Complete!"); }
+            timer = new CountDownTimer(timeLeft, 1000) {
+                public void onTick(long millis) {
+                    timeLeft = millis;
+                    timerDisplay.setValue("Time: " + (millis / 1000));
+                }
+                public void onFinish() {
+                    timeLeft = 0;
+                    timerDisplay.setValue("Complete!");
+                }
             }.start();
         }
 
         public void randomizeColor() {
             Random rnd = new Random();
-            int color = 0xFF000000 | rnd.nextInt(0xFFFFFF);
+            int color;
+            do {
+                color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            } while (ColorUtils.calculateLuminance(color) < 0.2 || ColorUtils.calculateLuminance(color) > 0.8);
             textColor.setValue(color);
         }
 
         @Override
         protected void onCleared() {
-            super.onCleared();
             if (timer != null) timer.cancel();
+            super.onCleared();
         }
     }
 
@@ -53,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(MainViewModel.class);
-        setupAudio();
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        audioManager = new AudioManager(this);
 
         MaterialTextView timerText = findViewById(R.id.timerText);
         MaterialButton btnStart = findViewById(R.id.btnStartTimer);
@@ -64,40 +98,19 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getTextColor().observe(this, timerText::setTextColor);
 
         btnStart.setOnClickListener(v -> {
-            playSound();
+            audioManager.playClick();
             viewModel.startTimer();
         });
 
         btnColor.setOnClickListener(v -> {
-            playSound();
+            audioManager.playClick();
             viewModel.randomizeColor();
         });
     }
 
-    private void setupAudio() {
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build();
-
-        soundPool = new SoundPool.Builder()
-                .setMaxStreams(1)
-                .setAudioAttributes(audioAttributes)
-                .build();
-
-        clickSoundId = soundPool.load(this, R.raw.click_sound, 1);
-    }
-
-    private void playSound() {
-        soundPool.play(clickSoundId, 1f, 1f, 1, 0, 1f);
-    }
-
     @Override
     protected void onDestroy() {
+        audioManager.release();
         super.onDestroy();
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-        }
     }
 }
