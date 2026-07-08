@@ -11,81 +11,73 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Focus Timer"
-        android:textColor="#00E5FF"
-        android:textSize="28sp"
+        android:text="Dynamic Timer Hub"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownTimer"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
-        android:textColor="#FFFFFF"
-        android:textSize="72sp"
-        android:textStyle="light"
+        android:text="00:00:00"
+        android:textColor="#00E5FF"
+        android:textSize="64sp"
+        android:textStyle="monospace"
         android:layout_marginBottom="48dp" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btnStartTimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="32dp">
-
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start"
-            android:layout_marginEnd="16dp" />
-
-        <Button
-            android:id="@+id/btnSoundToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FX: On" />
-    </LinearLayout>
+        android:text="Start Countdown"
+        android:backgroundTint="#00E5FF"
+        android:textColor="#101420"
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Theme Color"
+        android:text="Select UI Theme"
         android:textColor="#888888"
-        android:textSize="14sp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp" />
 
     <LinearLayout
-        android:id="@+id/colorPickerContainer"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:weightSum="3">
+        android:gravity="center">
 
-        <View
-            android:id="@+id/colorOption1"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            android:background="#FF5252" />
+        <ImageButton
+            android:id="@+id/btnColorRed"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:backgroundTint="#FF5252"
+            android:layout_marginEnd="16dp" />
 
-        <View
-            android:id="@+id/colorOption2"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            android:background="#00E676" />
+        <ImageButton
+            android:id="@+id/btnColorGreen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:backgroundTint="#69F0AE"
+            android:layout_marginEnd="16dp" />
 
-        <View
-            android:id="@+id/colorOption3"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            android:background="#2979FF" />
+        <ImageButton
+            android:id="@+id/btnColorBlue"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:backgroundTint="#448AFF" />
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/toggleSound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable Sound Effects"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="32dp"
+        android:checked="true" />
+
 </LinearLayout>
