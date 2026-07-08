@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStartTimer)
         soundToggle = findViewById(R.id.toggleSound)
 
-        // Ensure raw resource exists or handle gracefully
-        try {
-            clickSound = MediaPlayer.create(this, R.raw.click_sound)
+        // Sound initialized safely to prevent build failure if resource missing
+        clickSound = try {
+            MediaPlayer.create(this, R.raw.click_sound)
         } catch (e: Exception) {
-            clickSound = null
+            null
         }
 
         btnStart.setOnClickListener {
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound() {
-        if (soundToggle.isChecked && clickSound != null) {
+        if (soundToggle.isChecked) {
             clickSound?.apply {
                 if (isPlaying) {
                     pause()
