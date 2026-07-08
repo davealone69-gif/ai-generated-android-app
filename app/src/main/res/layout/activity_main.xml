@@ -11,14 +11,14 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
+        android:text="Dynamic Timer"
         android:textColor="#BB86FC"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -35,30 +35,32 @@
         android:layout_marginBottom="32dp">
 
         <Button
-            android:id="@+id/btnColorPicker"
+            android:id="@+id/btnStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick Color"
-            android:backgroundTint="#3700B3"
-            android:textColor="#FFFFFF"
+            android:text="Start"
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnToggleSound"
+            android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Toggle Sound"
-            android:backgroundTint="#03DAC5"
-            android:textColor="#000000" />
+            android:text="FX Toggle" />
     </LinearLayout>
 
+    <View
+        android:id="@+id/colorPreview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#03DAC5"
+        android:layout_marginBottom="32dp"
+        android:elevation="8dp" />
+
     <Button
-        android:id="@+id/btnStartTimer"
+        android:id="@+id/btnColorPicker"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Start Countdown"
-        android:textSize="16sp"
-        android:backgroundTint="#CF6679"
-        android:textColor="#FFFFFF" />
+        android:layout_height="wrap_content"
+        android:text="Pick Custom Color"
+        android:backgroundTint="#3700B3" />
 
 </LinearLayout>
