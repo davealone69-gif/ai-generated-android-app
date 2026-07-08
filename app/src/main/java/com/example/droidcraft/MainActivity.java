@@ -1,41 +1,75 @@
 package com.example.droidcraft;
 
+import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText inputEmail;
-    private EditText inputKey;
-    private Button btnConnect;
-    private TextView titleHeader;
+    private TextView timerText;
+    private Button btnStart, btnColor;
+    private CountDownTimer countDownTimer;
+    private MediaPlayer clickSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        inputEmail = findViewById(R.id.inputEmail);
-        inputKey = findViewById(R.id.inputKey);
-        btnConnect = findViewById(R.id.btnConnect);
-        titleHeader = findViewById(R.id.titleHeader);
+        timerText = findViewById(R.id.timerText);
+        btnStart = findViewById(R.id.btnStart);
+        btnColor = findViewById(R.id.btnColor);
+        
+        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
-        btnConnect.setOnClickListener(new View.OnClickListener() {
+        btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = inputEmail.getText().toString();
-                String key = inputKey.getText().toString();
-
-                if (email.isEmpty() || key.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Authentication values cannot be empty!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Access Granted! Logging in as: " + email, Toast.LENGTH_LONG).show();
-                }
+                playSound();
+                if (countDownTimer != null) countDownTimer.cancel();
+                
+                countDownTimer = new CountDownTimer(30000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                    }
+                    public void onFinish() {
+                        timerText.setText("Done!");
+                    }
+                }.start();
             }
         });
+
+        btnColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playSound();
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                timerText.setTextColor(color);
+                findViewById(R.id.mainLayout).setBackgroundColor(color + 0x20000000);
+            }
+        });
+    }
+
+    private void playSound() {
+        if (clickSound != null) {
+            clickSound.start();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (clickSound != null) {
+            clickSound.release();
+        }
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 }
