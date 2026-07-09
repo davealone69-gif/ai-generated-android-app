@@ -1,13 +1,12 @@
 package com.example.droidcraft
 
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.ShapeDrawable
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
@@ -29,8 +28,15 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
-        // Initialize sound
-        clickSound = MediaPlayer.create(this, R.raw.click_sound)
+        // Initialize sound safely
+        clickSound = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .build()
+            )
+        }
 
         btnStart.setOnClickListener {
             playSound()
@@ -76,11 +82,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun playSound() {
         if (soundEnabled) {
-            clickSound?.apply {
-                if (isPlaying) stop()
-                prepareAsync()
-                start()
-            }
+            // Re-creating or resetting for quick trigger
+            val mediaPlayer = MediaPlayer.create(this, android.R.drawable.btn_default) 
+            mediaPlayer.setOnCompletionListener { it.release() }
+            mediaPlayer.start()
         }
     }
 
