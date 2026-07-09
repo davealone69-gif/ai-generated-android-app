@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="DroidCraft Timer"
         android:textColor="#BB86FC"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
@@ -24,62 +24,77 @@
         android:text="00:00"
         android:textColor="#FFFFFF"
         android:textSize="72sp"
-        android:fontFamily="sans-serif-light"
+        android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
-    <Button
-        android:id="@+id/btnStartTimer"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:text="Start Timer"
-        android:backgroundTint="#03DAC5"
-        android:textColor="#000000"
-        android:layout_marginBottom="16dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="32dp">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#03DAC6" />
+
+        <Button
+            android:id="@+id/btnSoundToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toggle Sound"
+            android:backgroundTint="#CF6679" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Theme Color"
-        android:textColor="#888888"
-        android:textSize="14sp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="12dp" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/btnColorRed"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:background="#CF6679" />
-
-        <ImageButton
-            android:id="@+id/btnColorBlue"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:background="#03A9F4" />
-
-        <ImageButton
-            android:id="@+id/btnColorGreen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:background="#4CAF50" />
-    </LinearLayout>
-
-    <Switch
-        android:id="@+id/switchSound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sound Effects Enabled"
+        android:text="Theme Accent Color"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="32dp"
-        android:checked="true"
-        android:thumbTint="#BB86FC" />
+        android:layout_marginBottom="16dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/colorPickerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/colorRed"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#FF5252" />
+
+            <View
+                android:id="@+id/colorBlue"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#448AFF" />
+
+            <View
+                android:id="@+id/colorGreen"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#69F0AE" />
+
+            <View
+                android:id="@+id/colorYellow"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#FFFF00" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </LinearLayout>
