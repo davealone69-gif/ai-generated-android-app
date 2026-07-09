@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView timerText, statusText;
-    private Button btnStart, btnChangeColor;
+    private TextView timerText, titleHeader;
+    private Button btnStart, btnColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -21,10 +21,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        titleHeader = findViewById(R.id.titleHeader);
         timerText = findViewById(R.id.timerText);
-        statusText = findViewById(R.id.statusText);
         btnStart = findViewById(R.id.btnStart);
-        btnChangeColor = findViewById(R.id.btnChangeColor);
+        btnColor = findViewById(R.id.btnColor);
 
         clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
@@ -36,23 +36,23 @@ public class MainActivity extends AppCompatActivity {
                 
                 countDownTimer = new CountDownTimer(10000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Task Complete!");
+                        timerText.setText("Done!");
                     }
                 }.start();
             }
         });
 
-        btnChangeColor.setOnClickListener(new View.OnClickListener() {
+        btnColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                statusText.setTextColor(color);
-                statusText.setText("System Color Updated");
+                titleHeader.setTextColor(color);
+                btnColor.setBackgroundColor(color);
             }
         });
     }
@@ -66,7 +66,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) countDownTimer.cancel();
-        if (clickSound != null) clickSound.release();
+        if (clickSound != null) {
+            clickSound.release();
+        }
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 }
