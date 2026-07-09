@@ -11,14 +11,14 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
+        android:text="Dynamic Timer"
         android:textColor="#00E5FF"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/tvCountdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -42,48 +42,26 @@
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnSoundToggle"
+            android:id="@+id/btnSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sound: ON" />
+            android:text="Toggle Sound" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/viewColorPicker"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#FF4081"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:elevation="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Accent Color Picker"
-        android:textColor="#888888"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:id="@+id/colorPickerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <View
-            android:id="@+id/colorRed"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_red_light"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorGreen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_green_light"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorBlue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_blue_light"
-            android:layout_margin="8dp" />
-
-    </LinearLayout>
+        android:text="Tap to change theme"
+        android:textColor="#80FFFFFF"
+        android:textSize="14sp" />
 
 </LinearLayout>
