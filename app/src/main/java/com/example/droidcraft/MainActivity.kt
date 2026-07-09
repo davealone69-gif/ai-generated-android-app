@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +20,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    VideoMakerStudio()
+                    MainAppScreen()
                 }
             }
         }
@@ -29,61 +28,77 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun VideoMakerStudio() {
-    var projectName by remember { mutableStateOf("New AU Project") }
-    var isProcessing by remember { mutableStateOf(false) }
-    val projectSettings = remember { mutableStateListOf("Realistic Rendering", "High Frame Rate", "4K Output") }
+fun MainAppScreen() {
+    var counter by remember { mutableStateOf(0) }
+    var devHandle by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "AU Video Maker Studio",
+            text = "DroidCraft Live Sandbox",
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary
+            style = MaterialTheme.typography.headlineMedium
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Text(
+            text = "Build real apps on the fly",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = projectName,
-            onValueChange = { projectName = it },
-            label = { Text("Project Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Settings:", style = MaterialTheme.typography.titleMedium)
-
-        LazyColumn(modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
-            items(projectSettings.size) { index ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Text(
-                        text = projectSettings[index],
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Developer Profile",
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                OutlinedTextField(
+                    value = devHandle,
+                    onValueChange = { devHandle = it },
+                    placeholder = { Text("Enter your developer nickname...") }
+                )
             }
         }
-
-        Button(
-            onClick = { isProcessing = !isProcessing },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text(
+            text = "Total Runs Compiled: $counter",
+            style = MaterialTheme.typography.titleLarge
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(if (isProcessing) "Generating Video..." else "Start Realistic Rendering")
-        }
-
-        if (isProcessing) {
-            Spacer(modifier = Modifier.height(16.dp))
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Button(onClick = { counter++ }) {
+                Text("Increment Count")
+            }
+            
+            Button(
+                onClick = { counter = 0 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Reset")
+            }
         }
     }
 }
