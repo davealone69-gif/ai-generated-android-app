@@ -6,19 +6,17 @@
 set -e
 
 GRADLE_WRAPPER_JAR="gradle/wrapper/gradle-wrapper.jar"
-GRADLE_WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/v8.5.0/gradle/wrapper/gradle-wrapper.jar"
-
 if [ ! -f "$GRADLE_WRAPPER_JAR" ]; then
-    mkdir -p "$(dirname "$GRADLE_WRAPPER_JAR")"
-    echo "Downloading gradle-wrapper.jar..."
-    if command -v curl >/dev/null 2>&1; then
-        curl -sSL "$GRADLE_WRAPPER_URL" -o "$GRADLE_WRAPPER_JAR"
-    elif command -v wget >/dev/null 2>&1; then
-        wget -qO "$GRADLE_WRAPPER_JAR" "$GRADLE_WRAPPER_URL"
-    else
-        echo "Error: Neither curl nor wget found."
-        exit 1
-    fi
+    echo "Downloading Gradle Wrapper JAR..."
+    mkdir -p gradle/wrapper
+    curl -sSLo "$GRADLE_WRAPPER_JAR" https://raw.githubusercontent.com/gradle/gradle/v8.5.0/gradle/wrapper/gradle-wrapper.jar
 fi
 
-exec java     -XX:+HeapDumpOnOutOfMemoryError     -Xmx1024m     -Dorg.gradle.appname=gradlew     -classpath "$GRADLE_WRAPPER_JAR"     org.gradle.wrapper.GradleWrapperMain     "$@"
+exec java \
+    -XX:MaxMetaspaceSize=256m \
+    -XX:+HeapDumpOnOutOfMemoryError \
+    -Xmx1024m \
+    -Dorg.gradle.appname=gradlew \
+    -classpath "$GRADLE_WRAPPER_JAR" \
+    org.gradle.wrapper.GradleWrapperMain \
+    "$@"
