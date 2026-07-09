@@ -12,8 +12,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStartTimer;
-    private Button btnChangeColor;
+    private Button btnStartTimer, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                 }
-                countDownTimer = new CountDownTimer(10000, 1000) {
+                countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
-                btnStartTimer.setBackgroundColor(color);
                 btnChangeColor.setBackgroundColor(color);
             }
         });
