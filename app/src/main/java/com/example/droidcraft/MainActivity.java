@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvTimer, tvHeader;
+    private TextView timerText;
     private Button btnStart, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
@@ -21,8 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvTimer = findViewById(R.id.tvTimer);
-        tvHeader = findViewById(R.id.tvHeader);
+        timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
         btnChangeColor = findViewById(R.id.btnChangeColor);
 
@@ -32,7 +31,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 playSound();
-                startTimer(60000);
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
+                countDownTimer = new CountDownTimer(30000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                    }
+                    public void onFinish() {
+                        timerText.setText("Time's Up!");
+                    }
+                }.start();
             }
         });
 
@@ -40,26 +49,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 playSound();
-                int color = Color.rgb(new Random().nextInt(256), new Random().nextInt(256), new Random().nextInt(256));
-                tvHeader.setTextColor(color);
-                tvTimer.setTextColor(color);
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                timerText.setTextColor(color);
             }
         });
-    }
-
-    private void startTimer(long millis) {
-        if (countDownTimer != null) countDownTimer.cancel();
-        countDownTimer = new CountDownTimer(millis, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText("Time: " + millisUntilFinished / 1000 + "s");
-            }
-
-            @Override
-            public void onFinish() {
-                tvTimer.setText("Time's Up!");
-            }
-        }.start();
     }
 
     private void playSound() {
@@ -71,7 +65,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) countDownTimer.cancel();
-        if (clickSound != null) clickSound.release();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        if (clickSound != null) {
+            clickSound.release();
+        }
     }
 }
