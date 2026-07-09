@@ -11,7 +11,7 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
+        android:text="Focus Timer"
         android:textColor="#BB86FC"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -21,7 +21,7 @@
         android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
+        android:text="25:00"
         android:textColor="#FFFFFF"
         android:textSize="72sp"
         android:fontFamily="sans-serif-light"
@@ -39,38 +39,51 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start"
-            android:backgroundTint="#03DAC5"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#03DAC6" />
 
         <Button
-            android:id="@+id/btnReset"
+            android:id="@+id/btnSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reset"
-            android:backgroundTint="#CF6679" />
+            android:text="Toggle Sound"
+            android:backgroundTint="#3700B3" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/colorPreview"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@android:color/white"
-        android:layout_marginBottom="24dp" />
-
-    <Button
-        android:id="@+id/btnPickColor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Theme Color"
-        android:backgroundTint="#3700B3" />
-
-    <CheckBox
-        android:id="@+id/soundToggle"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enable Sound Effects"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp"
-        android:checked="true" />
+        android:text="Pick Theme Color"
+        android:textColor="#80FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp" />
 
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/colorRed"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#CF6679"
+            android:layout_margin="8dp" />
+
+        <View
+            android:id="@+id/colorBlue"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#6200EE"
+            android:layout_margin="8dp" />
+
+        <View
+            android:id="@+id/colorGreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#03DAC6"
+            android:layout_margin="8dp" />
+    </LinearLayout>
 </LinearLayout>
