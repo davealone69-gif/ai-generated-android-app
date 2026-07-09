@@ -1,7 +1,6 @@
 package com.example.droidcraft
 
 import android.content.Context
-import android.graphics.Color
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -46,7 +45,12 @@ class MainActivity : AppCompatActivity() {
             playSound()
         }
 
-        val colors = intArrayOf(Color.parseColor("#FF5252"), Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"))
+        // Define colors matching the XML theme
+        val colors = intArrayOf(
+            android.graphics.Color.parseColor("#FF5252"), 
+            android.graphics.Color.parseColor("#4CAF50"), 
+            android.graphics.Color.parseColor("#2196F3")
+        )
         val colorIds = intArrayOf(R.id.colorOption1, R.id.colorOption2, R.id.colorOption3)
         
         for (i in colorIds.indices) {
@@ -66,5 +70,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+        countDownTimer = null
     }
 }
