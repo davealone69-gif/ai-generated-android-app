@@ -27,11 +27,10 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
-        // Attempt to initialize sound, handle potential missing resource gracefully
-        try {
-            clickSound = MediaPlayer.create(this, R.raw.click_sound)
-        } catch (e: Exception) {
-            clickSound = null
+        // Safely check if the resource exists to prevent build failures
+        val resId = resources.getIdentifier("click_sound", "raw", packageName)
+        if (resId != 0) {
+            clickSound = MediaPlayer.create(this, resId)
         }
 
         btnStart.setOnClickListener {
@@ -44,7 +43,6 @@ class MainActivity : AppCompatActivity() {
             btnSoundToggle.text = if (isSoundEnabled) "SFX On" else "SFX Off"
         }
 
-        // Color Picker Logic using parseColor for safety
         findViewById<View>(R.id.colorRed).setOnClickListener { changeColor(Color.parseColor("#CF6679")) }
         findViewById<View>(R.id.colorBlue).setOnClickListener { changeColor(Color.parseColor("#03DAC5")) }
         findViewById<View>(R.id.colorGold).setOnClickListener { changeColor(Color.parseColor("#FFD700")) }
@@ -69,8 +67,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun playSound() {
         if (isSoundEnabled && clickSound != null) {
-            clickSound?.seekTo(0)
-            clickSound?.start()
+            try {
+                clickSound?.seekTo(0)
+                clickSound?.start()
+            } catch (e: Exception) {
+                // Ignore playback errors
+            }
         }
     }
 
