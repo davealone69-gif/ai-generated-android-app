@@ -1,81 +1,99 @@
 package com.example.droidcraft
 
-import android.graphics.Color
-import android.media.ToneGenerator
-import android.media.AudioManager
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.util.Locale
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var countdownDisplay: TextView
+
+    private lateinit var timerText: TextView
     private lateinit var btnStart: Button
-    private lateinit var btnSound: Button
+    private lateinit var btnSoundToggle: Button
+    
     private var countDownTimer: CountDownTimer? = null
-    private var isSoundEnabled = true
-    private val toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+    private var soundEnabled = true
+    private var soundPool: SoundPool? = null
+    private var soundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        countdownDisplay = findViewById(R.id.countdownDisplay)
+        // Initialize SoundPool for better performance
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+        // Note: In a production app, load a specific asset. 
+        // Using system notification as a placeholder.
+        soundId = soundPool?.load(this, android.R.drawable.stat_notify_chat, 1) ?: 0
+
+        timerText = findViewById(R.id.countdownDisplay)
         btnStart = findViewById(R.id.btnStart)
-        btnSound = findViewById(R.id.btnSound)
+        btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
         btnStart.setOnClickListener {
             playSound()
-            startTimer(30000)
+            startTimer()
         }
 
-        btnSound.setOnClickListener {
-            isSoundEnabled = !isSoundEnabled
-            btnSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
+        btnSoundToggle.setOnClickListener {
+            soundEnabled = !soundEnabled
+            btnSoundToggle.text = if (soundEnabled) "Sound: ON" else "Sound: OFF"
         }
 
-        // Color Picker Setup
-        val colors = listOf(Color.parseColor("#FF5252"), Color.parseColor("#03DAC5"), Color.parseColor("#BB86FC"))
-        val colorViews = listOf(
-            findViewById<View>(R.id.colorOption1),
-            findViewById<View>(R.id.colorOption2),
-            findViewById<View>(R.id.colorOption3)
-        )
-        
-        colorViews.forEachIndexed { index, view ->
-            view.setOnClickListener {
-                // Apply background color to the root view (LinearLayout)
-                findViewById<View>(android.R.id.content).getChildAt(0).setBackgroundColor(colors[index])
-                playSound()
-            }
-        }
+        setupColorPickers()
     }
 
-    private fun startTimer(millis: Long) {
+    private fun startTimer() {
         countDownTimer?.cancel()
-        countDownTimer = object : CountDownTimer(millis, 1000) {
+        countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
-                countdownDisplay.text = String.format(Locale.getDefault(), "00:%02d", seconds)
+                timerText.text = String.format("00:%02d", seconds)
             }
             override fun onFinish() {
-                countdownDisplay.text = "00:00"
+                timerText.text = "00:00"
             }
         }.start()
     }
 
+    private fun setupColorPickers() {
+        val colorMap = mapOf(
+            R.id.colorRed to android.R.color.holo_red_light,
+            R.id.colorGreen to android.R.color.holo_green_light,
+            R.id.colorBlue to android.R.color.holo_blue_light
+        )
+        
+        colorMap.forEach { (viewId, colorRes) ->
+            findViewById<View>(viewId)?.setOnClickListener {
+                playSound()
+                val color = ContextCompat.getColor(this, colorRes)
+                timerText.setTextColor(color)
+            }
+        }
+    }
+
     private fun playSound() {
-        if (isSoundEnabled) {
-            toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
+        if (soundEnabled && soundId != 0) {
+            soundPool?.play(soundId, 1f, 1f, 1, 0, 1f)
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         countDownTimer?.cancel()
-        toneGen.release()
+        soundPool?.release()
+        soundPool = null
+        super.onDestroy()
     }
 }
