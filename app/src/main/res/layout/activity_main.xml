@@ -5,14 +5,14 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#121212">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
-        android:textColor="#00E5FF"
+        android:text="Focus Timer"
+        android:textColor="#BB86FC"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
@@ -42,17 +42,17 @@
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnSoundToggle"
+            android:id="@+id/btnSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sound: ON" />
+            android:text="Toggle Sound" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Accent Color Picker"
-        android:textColor="#888888"
+        android:text="Theme Color Picker"
+        android:textColor="#808080"
         android:textSize="14sp"
         android:layout_marginBottom="16dp" />
 
@@ -64,26 +64,25 @@
         android:gravity="center">
 
         <View
-            android:id="@+id/colorRed"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_red_light"
+            android:id="@+id/colorOption1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FF5252"
             android:layout_margin="8dp" />
 
         <View
-            android:id="@+id/colorGreen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_green_light"
+            android:id="@+id/colorOption2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#03DAC5"
             android:layout_margin="8dp" />
 
         <View
-            android:id="@+id/colorBlue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/holo_blue_light"
+            android:id="@+id/colorOption3"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#BB86FC"
             android:layout_margin="8dp" />
-
     </LinearLayout>
 
 </LinearLayout>
