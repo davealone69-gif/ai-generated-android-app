@@ -11,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView timerText, statusLabel;
+    private TextView timerText;
     private Button btnStart, btnColor;
     private CountDownTimer countDownTimer;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer clickSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,49 +22,49 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         timerText = findViewById(R.id.timerText);
-        statusLabel = findViewById(R.id.statusLabel);
         btnStart = findViewById(R.id.btnStart);
         btnColor = findViewById(R.id.btnColor);
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.click_sound);
+        clickSound = MediaPlayer.create(this, android.R.raw.click);
 
-        btnStart.setOnClickListener(v -> {
-            playSound();
-            if (countDownTimer != null) countDownTimer.cancel();
-            
-            countDownTimer = new CountDownTimer(10000, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    timerText.setText("Time: " + millisUntilFinished / 1000);
-                }
-                public void onFinish() {
-                    timerText.setText("Task Complete!");
-                }
-            }.start();
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playSound();
+                if (countDownTimer != null) countDownTimer.cancel();
+                
+                countDownTimer = new CountDownTimer(30000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                    }
+                    public void onFinish() {
+                        timerText.setText("Done!");
+                    }
+                }.start();
+            }
         });
 
-        btnColor.setOnClickListener(v -> {
-            playSound();
-            Random rnd = new Random();
-            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-            statusLabel.setTextColor(color);
-            statusLabel.setText("System Color Updated");
+        btnColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playSound();
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                timerText.setTextColor(color);
+            }
         });
     }
 
     private void playSound() {
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
+        if (clickSound != null) {
+            clickSound.start();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
