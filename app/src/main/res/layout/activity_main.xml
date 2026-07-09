@@ -11,20 +11,20 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
-        android:textColor="#00E5FF"
-        android:textSize="28sp"
+        android:text="Dynamic Timer"
+        android:textColor="#E0E0E0"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
-        android:textColor="#FFFFFF"
+        android:textColor="#00E676"
         android:textSize="72sp"
-        android:fontFamily="sans-serif-light"
+        android:textStyle="monospace|bold"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -39,26 +39,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start"
-            android:backgroundTint="#00E5FF"
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnSoundEffect"
+            android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Audio Toggle"
-            android:backgroundTint="#444444" />
+            android:text="Sound: ON" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#33FFFFFF"
+        android:layout_marginBottom="32dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Accent"
-        android:textColor="#888888"
-        android:layout_marginBottom="12dp" />
+        android:text="Theme Accent Picker"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp" />
 
     <LinearLayout
-        android:id="@+id/colorPickerLayout"
+        android:id="@+id/colorPickerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -75,11 +79,18 @@
             android:id="@+id/colorOption2"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="#7C4DFF"
+            android:background="#448AFF"
             android:layout_margin="8dp" />
 
         <View
             android:id="@+id/colorOption3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#FFEB3B"
+            android:layout_margin="8dp" />
+
+        <View
+            android:id="@+id/colorOption4"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="#00E676"
