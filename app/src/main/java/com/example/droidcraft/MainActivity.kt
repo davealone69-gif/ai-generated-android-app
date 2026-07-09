@@ -1,64 +1,85 @@
 package com.example.droidcraft
 
-import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.util.Locale
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var timerDisplay: TextView
+
+    private lateinit var timerText: TextView
     private lateinit var btnStart: Button
     private lateinit var btnSoundToggle: Button
+    
     private var countDownTimer: CountDownTimer? = null
-    private var isSoundEnabled = true
+    private var soundEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerDisplay = findViewById(R.id.timerDisplay)
+        timerText = findViewById(R.id.countdownDisplay)
         btnStart = findViewById(R.id.btnStart)
         btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
         btnStart.setOnClickListener {
-            startTimer(30000)
+            playSound()
+            startTimer()
         }
 
         btnSoundToggle.setOnClickListener {
-            isSoundEnabled = !isSoundEnabled
-            btnSoundToggle.text = if (isSoundEnabled) "Sound On" else "Sound Off"
+            soundEnabled = !soundEnabled
+            btnSoundToggle.text = if (soundEnabled) "Sound: ON" else "Sound: OFF"
         }
 
-        // Setup color picker views
-        findViewById<android.view.View>(R.id.colorRed).setOnClickListener { changeThemeColor(Color.parseColor("#CF6679")) }
-        findViewById<android.view.View>(R.id.colorBlue).setOnClickListener { changeThemeColor(Color.parseColor("#03DAC5")) }
-        findViewById<android.view.View>(R.id.colorGold).setOnClickListener { changeThemeColor(Color.parseColor("#FDD835")) }
+        setupColorPickers()
     }
 
-    private fun startTimer(millis: Long) {
+    private fun startTimer() {
         countDownTimer?.cancel()
-        countDownTimer = object : CountDownTimer(millis, 1000) {
+        countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val seconds = (millisUntilFinished / 1000) % 60
-                timerDisplay.text = String.format(Locale.getDefault(), "00:%02d", seconds)
+                val seconds = millisUntilFinished / 1000
+                timerText.text = String.format("00:%02d", seconds)
             }
-
             override fun onFinish() {
-                timerDisplay.text = "00:00"
+                timerText.text = "00:00"
             }
         }.start()
     }
 
-    private fun changeThemeColor(color: Int) {
-        timerDisplay.setTextColor(color)
-        btnStart.setBackgroundColor(color)
+    private fun setupColorPickers() {
+        val colorMap = mapOf(
+            R.id.colorRed to android.R.color.holo_red_light,
+            R.id.colorGreen to android.R.color.holo_green_light,
+            R.id.colorBlue to android.R.color.holo_blue_light
+        )
+        
+        colorMap.forEach { (viewId, colorRes) ->
+            findViewById<View>(viewId)?.setOnClickListener {
+                playSound()
+                val color = ContextCompat.getColor(this, colorRes)
+                timerText.setTextColor(color)
+            }
+        }
+    }
+
+    private fun playSound() {
+        if (soundEnabled) {
+            // Using system sound effect via MediaPlayer
+            val mediaPlayer = MediaPlayer.create(this, android.R.raw.alert_light) ?: return
+            mediaPlayer.setOnCompletionListener { it.release() }
+            mediaPlayer.start()
+        }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         countDownTimer?.cancel()
+        super.onDestroy()
     }
 }
