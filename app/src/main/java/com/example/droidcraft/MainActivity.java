@@ -12,9 +12,9 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStart, btnChangeColor;
+    private Button btnStart, btnColor;
     private CountDownTimer countDownTimer;
-    private MediaPlayer beepSound;
+    private MediaPlayer clickSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,56 +23,48 @@ public class MainActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
-        btnChangeColor = findViewById(R.id.btnChangeColor);
+        btnColor = findViewById(R.id.btnColor);
         
-        beepSound = MediaPlayer.create(this, android.R.raw.click);
+        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playClickSound();
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
+                playSound();
+                if (countDownTimer != null) countDownTimer.cancel();
                 
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
-
                     public void onFinish() {
-                        timerText.setText("Time's Up!");
+                        timerText.setText("Done!");
                     }
                 }.start();
             }
         });
 
-        btnChangeColor.setOnClickListener(new View.OnClickListener() {
+        btnColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playClickSound();
+                playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
-                findViewById(R.id.mainLayout).setBackgroundColor(color & 0x40FFFFFF);
             }
         });
     }
 
-    private void playClickSound() {
-        if (beepSound != null) {
-            beepSound.start();
+    private void playSound() {
+        if (clickSound != null) {
+            clickSound.start();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (beepSound != null) {
-            beepSound.release();
-        }
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
