@@ -5,26 +5,25 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Focus Timer"
-        android:textColor="#BB86FC"
+        android:text="DroidCraft Timer"
+        android:textColor="#00E676"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/tvCountdown"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
-        android:textSize="72sp"
-        android:textStyle="monospace"
+        android:textSize="64sp"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -36,57 +35,57 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
             android:text="Start"
-            android:backgroundTint="#03DAC5"
-            android:layout_marginEnd="16dp" />
+            android:backgroundTint="#00E676"
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btnSoundToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
             android:text="Audio FX"
-            android:backgroundTint="#3700B3" />
-
+            android:backgroundTint="#2979FF"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Accent Selector"
+        android:text="Select Theme Accent"
         android:textColor="#888888"
-        android:textSize="14sp"
         android:layout_marginBottom="16dp" />
 
-    <LinearLayout
-        android:id="@+id/colorPickerContainer"
+    <RadioGroup
+        android:id="@+id/colorPicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
 
-        <View
+        <RadioButton
             android:id="@+id/colorRed"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#CF6679"
-            android:layout_margin="8dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:buttonTint="#FF5252" />
 
-        <View
+        <RadioButton
             android:id="@+id/colorBlue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#03DAC5"
-            android:layout_margin="8dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:buttonTint="#2979FF" />
 
-        <View
-            android:id="@+id/colorYellow"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#F1C40F"
-            android:layout_margin="8dp" />
-
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/colorGreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:buttonTint="#00E676" />
+    </RadioGroup>
 
 </LinearLayout>
