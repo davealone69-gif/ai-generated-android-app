@@ -5,90 +5,86 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#0F172A">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Focus Timer"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
+        android:text="Dynamic Timer"
+        android:textColor="#E2E8F0"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginTop="20dp" />
+        android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
-        android:textColor="#00E5FF"
+        android:textColor="#38BDF8"
         android:textSize="72sp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginVertical="40dp" />
-
-    <Button
-        android:id="@+id/btnStartTimer"
-        android:layout_width="200dp"
-        android:layout_height="55dp"
-        android:text="Start Sequence"
-        android:backgroundTint="#00E5FF"
-        android:textColor="#101420"
         android:textStyle="bold"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="48dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="30dp"
-        android:background="#1A2030"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="32dp">
 
-        <TextView
+        <Button
+            android:id="@+id/btnStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Accent Color Selector"
-            android:textColor="#888888"
-            android:textSize="14sp" />
+            android:text="Start"
+            android:layout_marginEnd="16dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnSoundToggle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp"
-            android:gravity="center">
-
-            <View
-                android:id="@+id/colorRed"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@android:color/holo_red_light"
-                android:layout_margin="8dp" />
-
-            <View
-                android:id="@+id/colorGreen"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@android:color/holo_green_light"
-                android:layout_margin="8dp" />
-
-            <View
-                android:id="@+id/colorBlue"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@android:color/holo_blue_light"
-                android:layout_margin="8dp" />
-        </LinearLayout>
+            android:text="FX: ON" />
     </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/soundToggle"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enable Haptic &amp; Sound FX"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="32dp"
-        android:checked="true" />
+        android:text="Interface Theme Picker"
+        android:textColor="#94A3B8"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#1E293B">
+
+        <View
+            android:id="@+id/colorOption1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#EF4444" />
+
+        <View
+            android:id="@+id/colorOption2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#22C55E" />
+
+        <View
+            android:id="@+id/colorOption3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#3B82F6" />
+    </LinearLayout>
 
 </LinearLayout>
