@@ -7,13 +7,12 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStart, btnColor;
+    private Button btnStart, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -24,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
-        btnColor = findViewById(R.id.btnColor);
+        btnChangeColor = findViewById(R.id.btnChangeColor);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_effect);
+        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,23 +36,23 @@ public class MainActivity extends AppCompatActivity {
                 }
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Timer Finished!");
+                        timerText.setText("Done!");
                     }
                 }.start();
             }
         });
 
-        btnColor.setOnClickListener(new View.OnClickListener() {
+        btnChangeColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
-                Toast.makeText(MainActivity.this, "Color Shifted!", Toast.LENGTH_SHORT).show();
+                btnStart.setBackgroundColor(color);
             }
         });
     }
