@@ -24,34 +24,29 @@ public class MainActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
         btnColor = findViewById(R.id.btnColor);
-        
-        clickSound = MediaPlayer.create(this, R.raw.click_effect);
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                if (countDownTimer != null) countDownTimer.cancel();
-                
-                countDownTimer = new CountDownTimer(30000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
-                    }
-                    public void onFinish() {
-                        timerText.setText("Done!");
-                    }
-                }.start();
-            }
+        clickSound = MediaPlayer.create(this, android.R.raw.click);
+
+        btnStart.setOnClickListener(v -> {
+            playSound();
+            if (countDownTimer != null) countDownTimer.cancel();
+            
+            countDownTimer = new CountDownTimer(30000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    timerText.setText("Time: " + millisUntilFinished / 1000);
+                }
+                public void onFinish() {
+                    timerText.setText("Time's Up!");
+                }
+            }.start();
         });
 
-        btnColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                Random rnd = new Random();
-                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                timerText.setTextColor(color);
-            }
+        btnColor.setOnClickListener(v -> {
+            playSound();
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            timerText.setTextColor(color);
+            btnColor.setBackgroundColor(color);
         });
     }
 
