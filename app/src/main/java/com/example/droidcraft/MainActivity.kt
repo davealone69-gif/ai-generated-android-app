@@ -1,8 +1,8 @@
 package com.example.droidcraft
 
+import android.content.Context
 import android.graphics.Color
-import android.media.AudioAttributes
-import android.media.SoundPool
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -15,23 +15,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStart: Button
     private lateinit var btnSound: Button
     private var countDownTimer: CountDownTimer? = null
-    private var soundPool: SoundPool? = null
     private var isSoundEnabled = true
+    private lateinit var audioManager: AudioManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         timerDisplay = findViewById(R.id.timerDisplay)
         btnStart = findViewById(R.id.btnStart)
         btnSound = findViewById(R.id.btnSound)
-
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-        
-        soundPool = SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audioAttributes).build()
 
         btnStart.setOnClickListener {
             playSound()
@@ -49,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         btnSound.setOnClickListener {
             isSoundEnabled = !isSoundEnabled
             btnSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
+            playSound()
         }
 
         val colors = intArrayOf(Color.parseColor("#FF5252"), Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"))
@@ -63,14 +58,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound() {
-        // Sound playback logic removed to avoid R.raw references that don't exist
-        // SoundPool placeholder logic to maintain structural integrity
+        if (isSoundEnabled) {
+            audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK, 1.0f)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-        soundPool?.release()
-        soundPool = null
     }
 }
