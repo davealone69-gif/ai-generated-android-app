@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         btnStartTimer = findViewById(R.id.btnStartTimer);
         btnChangeColor = findViewById(R.id.btnChangeColor);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
+        clickSound = MediaPlayer.create(this, R.raw.click_effect);
 
         btnStartTimer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,12 +35,12 @@ public class MainActivity extends AppCompatActivity {
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                 }
-                countDownTimer = new CountDownTimer(10000, 1000) {
+                countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Time: 0");
+                        timerText.setText("Done!");
                     }
                 }.start();
             }
