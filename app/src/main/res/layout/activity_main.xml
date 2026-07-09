@@ -5,20 +5,20 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#121212">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dynamic Timer Hub"
-        android:textColor="#00E5FF"
-        android:textSize="24sp"
+        android:text="DroidCraft Timer"
+        android:textColor="#BB86FC"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -27,32 +27,79 @@
         android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
-    <Button
-        android:id="@+id/btnStartTimer"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Start Countdown"
-        android:backgroundTint="#00E5FF"
-        android:textColor="#101420"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="32dp">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:backgroundTint="#03DAC5"
+            android:textColor="#000000"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Stop"
+            android:backgroundTint="#CF6679"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick Theme Color"
+        android:textColor="#888888"
+        android:textSize="14sp"
         android:layout_marginBottom="16dp" />
 
-    <Button
-        android:id="@+id/btnColorPicker"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Change Accent Color"
-        android:backgroundTint="#2D3446"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="16dp" />
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/colorRed"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#FF5252" />
+
+        <View
+            android:id="@+id/colorBlue"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#448AFF" />
+
+        <View
+            android:id="@+id/colorGreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#69F0AE" />
+    </LinearLayout>
 
     <Switch
         android:id="@+id/switchSound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enable Sound Effects"
-        android:textColor="#8A92A3"
-        android:thumbTint="#00E5FF"
-        android:trackTint="#2D3446"
-        android:layout_marginTop="24dp" />
+        android:text="Sound Effects"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="32dp"
+        android:thumbTint="#BB86FC"
+        android:trackTint="#33BB86FC" />
 
 </LinearLayout>
