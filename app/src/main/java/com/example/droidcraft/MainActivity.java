@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStartTimer, btnChangeColor;
+    private Button btnStart, btnColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -22,21 +22,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         timerText = findViewById(R.id.timerText);
-        btnStartTimer = findViewById(R.id.btnStartTimer);
-        btnChangeColor = findViewById(R.id.btnChangeColor);
+        btnStart = findViewById(R.id.btnStart);
+        btnColor = findViewById(R.id.btnColor);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_effect);
+        clickSound = MediaPlayer.create(this, android.R.raw.click);
 
-        btnStartTimer.setOnClickListener(new View.OnClickListener() {
+        btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playSound();
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
+                if (countDownTimer != null) countDownTimer.cancel();
+                
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
                         timerText.setText("Done!");
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnChangeColor.setOnClickListener(new View.OnClickListener() {
+        btnColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playSound();
@@ -65,11 +64,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-        if (clickSound != null) {
-            clickSound.release();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
