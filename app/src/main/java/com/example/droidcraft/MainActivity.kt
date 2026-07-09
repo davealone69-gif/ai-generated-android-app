@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -26,8 +27,12 @@ class MainActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
-        // Initialize sounds - ensure res/raw/click_sound.mp3 exists or handle null
-        clickSound = MediaPlayer.create(this, R.raw.click_sound)
+        // Attempt to initialize sound, handle potential missing resource gracefully
+        try {
+            clickSound = MediaPlayer.create(this, R.raw.click_sound)
+        } catch (e: Exception) {
+            clickSound = null
+        }
 
         btnStart.setOnClickListener {
             playSound()
@@ -39,10 +44,10 @@ class MainActivity : AppCompatActivity() {
             btnSoundToggle.text = if (isSoundEnabled) "SFX On" else "SFX Off"
         }
 
-        // Color Picker Logic
-        findViewById<android.view.View>(R.id.colorRed).setOnClickListener { changeColor(0xFFCF6679.toInt()) }
-        findViewById<android.view.View>(R.id.colorBlue).setOnClickListener { changeColor(0xFF03DAC5.toInt()) }
-        findViewById<android.view.View>(R.id.colorGold).setOnClickListener { changeColor(0xFFFFD700.toInt()) }
+        // Color Picker Logic using parseColor for safety
+        findViewById<View>(R.id.colorRed).setOnClickListener { changeColor(Color.parseColor("#CF6679")) }
+        findViewById<View>(R.id.colorBlue).setOnClickListener { changeColor(Color.parseColor("#03DAC5")) }
+        findViewById<View>(R.id.colorGold).setOnClickListener { changeColor(Color.parseColor("#FFD700")) }
     }
 
     private fun startTimer(millis: Long) {
@@ -63,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound() {
-        if (isSoundEnabled) {
+        if (isSoundEnabled && clickSound != null) {
             clickSound?.seekTo(0)
             clickSound?.start()
         }
