@@ -12,9 +12,9 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText;
-    private Button btnStart, btnColor;
+    private Button btnStartTimer, btnChangeColor;
     private CountDownTimer countDownTimer;
-    private MediaPlayer clickSound;
+    private MediaPlayer beepPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,49 +22,49 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         timerText = findViewById(R.id.timerText);
-        btnStart = findViewById(R.id.btnStart);
-        btnColor = findViewById(R.id.btnColor);
+        btnStartTimer = findViewById(R.id.btnStartTimer);
+        btnChangeColor = findViewById(R.id.btnChangeColor);
         
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
+        beepPlayer = MediaPlayer.create(this, R.raw.beep_sound);
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
+        btnStartTimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSound();
-                if (countDownTimer != null) countDownTimer.cancel();
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
                 
-                countDownTimer = new CountDownTimer(30000, 1000) {
+                countDownTimer = new CountDownTimer(10000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                        if (beepPlayer != null) beepPlayer.start();
                     }
+
                     public void onFinish() {
-                        timerText.setText("Done!");
+                        timerText.setText("Timer Finished!");
                     }
                 }.start();
             }
         });
 
-        btnColor.setOnClickListener(new View.OnClickListener() {
+        btnChangeColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
+                findViewById(R.id.mainLayout).setBackgroundColor(Color.argb(50, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
             }
         });
-    }
-
-    private void playSound() {
-        if (clickSound != null) {
-            clickSound.start();
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (countDownTimer != null) countDownTimer.cancel();
-        if (clickSound != null) clickSound.release();
+        if (beepPlayer != null) {
+            beepPlayer.release();
+            beepPlayer = null;
+        }
     }
 }
