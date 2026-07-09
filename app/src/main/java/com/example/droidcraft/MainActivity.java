@@ -31,12 +31,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 playSound();
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
+                if (countDownTimer != null) countDownTimer.cancel();
+                
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
                         timerText.setText("Done!");
@@ -65,11 +64,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-        if (clickSound != null) {
-            clickSound.release();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
