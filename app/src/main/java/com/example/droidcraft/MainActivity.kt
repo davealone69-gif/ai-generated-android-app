@@ -1,91 +1,76 @@
 package com.example.droidcraft
 
-import android.media.MediaPlayer
+import android.graphics.Color
+import android.media.ToneGenerator
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var timerText: TextView
+    private lateinit var countdownDisplay: TextView
     private lateinit var btnStart: Button
-    private lateinit var btnSoundToggle: Button
-    
+    private lateinit var btnSound: Button
     private var countDownTimer: CountDownTimer? = null
-    private var soundEnabled = true
+    private var isSoundEnabled = true
+    private val toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerText = findViewById(R.id.countdownDisplay)
+        countdownDisplay = findViewById(R.id.countdownDisplay)
         btnStart = findViewById(R.id.btnStart)
-        btnSoundToggle = findViewById(R.id.btnSoundToggle)
+        btnSound = findViewById(R.id.btnSound)
 
         btnStart.setOnClickListener {
             playSound()
-            startTimer()
+            startTimer(30000)
         }
 
-        btnSoundToggle.setOnClickListener {
-            soundEnabled = !soundEnabled
-            btnSoundToggle.text = if (soundEnabled) "Sound: ON" else "Sound: OFF"
+        btnSound.setOnClickListener {
+            isSoundEnabled = !isSoundEnabled
+            btnSound.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
         }
 
-        setupColorPickers()
+        // Color Picker Setup
+        val colors = listOf(Color.parseColor("#FF5252"), Color.parseColor("#03DAC5"), Color.parseColor("#BB86FC"))
+        val colorViews = listOf(findViewById<View>(R.id.colorOption1), findViewById<View>(R.id.colorOption2), findViewById<View>(R.id.colorOption3))
+        
+        colorViews.forEachIndexed { index, view ->
+            view.setOnClickListener {
+                window.decorView.setBackgroundColor(colors[index])
+                playSound()
+            }
+        }
     }
 
-    private fun startTimer() {
+    private fun startTimer(millis: Long) {
         countDownTimer?.cancel()
-        countDownTimer = object : CountDownTimer(30000, 1000) {
+        countDownTimer = object : CountDownTimer(millis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
-                timerText.text = String.format("00:%02d", seconds)
+                countdownDisplay.text = String.format(Locale.getDefault(), "00:%02d", seconds)
             }
             override fun onFinish() {
-                timerText.text = "00:00"
+                countdownDisplay.text = "00:00"
             }
         }.start()
     }
 
-    private fun setupColorPickers() {
-        val colorMap = mapOf(
-            R.id.colorRed to android.R.color.holo_red_light,
-            R.id.colorGreen to android.R.color.holo_green_light,
-            R.id.colorBlue to android.R.color.holo_blue_light
-        )
-        
-        colorMap.forEach { (viewId, colorRes) ->
-            findViewById<View>(viewId)?.setOnClickListener {
-                playSound()
-                val color = ContextCompat.getColor(this, colorRes)
-                timerText.setTextColor(color)
-            }
-        }
-    }
-
     private fun playSound() {
-        if (soundEnabled) {
-            try {
-                val notification = Settings.System.DEFAULT_NOTIFICATION_URI
-                val mediaPlayer = MediaPlayer.create(this, notification)
-                mediaPlayer?.apply {
-                    setOnCompletionListener { it.release() }
-                    start()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        if (isSoundEnabled) {
+            toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
         }
     }
 
     override fun onDestroy() {
-        countDownTimer?.cancel()
         super.onDestroy()
+        countDownTimer?.cancel()
+        toneGen.release()
     }
 }
