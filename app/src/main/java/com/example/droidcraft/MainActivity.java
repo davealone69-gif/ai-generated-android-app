@@ -7,6 +7,7 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
@@ -36,10 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                        timerText.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Time's up!");
+                        timerText.setText("Done!");
+                        Toast.makeText(MainActivity.this, "Timer Finished!", Toast.LENGTH_SHORT).show();
                     }
                 }.start();
             }
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 timerText.setTextColor(color);
-                btnStart.setBackgroundColor(color);
+                Toast.makeText(MainActivity.this, "Color Shifted!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -66,11 +68,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
         if (clickSound != null) {
             clickSound.release();
+        }
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
         }
     }
 }
