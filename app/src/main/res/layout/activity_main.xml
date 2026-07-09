@@ -23,8 +23,8 @@
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
-        android:textSize="64sp"
-        android:textStyle="monospace"
+        android:textSize="72sp"
+        android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -34,56 +34,31 @@
         android:gravity="center"
         android:layout_marginBottom="32dp">
 
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start"
+        <ImageButton
+            android:id="@+id/btnColorPicker"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:backgroundTint="#2D3446"
+            android:contentDescription="Color Picker"
             android:layout_marginEnd="16dp" />
 
         <Button
             android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SFX On" />
+            android:layout_height="60dp"
+            android:text="Sound: ON"
+            android:backgroundTint="#2D3446" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pick Theme Color"
-        android:textColor="#88FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:id="@+id/colorPickerContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#1E2538"
-        android:padding="8dp">
-
-        <View
-            android:id="@+id/colorCyan"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#00E5FF"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorPink"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#FF4081"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorLime"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#B2FF59"
-            android:layout_margin="8dp" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/btnStartTimer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Start Countdown"
+        android:textColor="#101420"
+        android:backgroundTint="#00E5FF"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>
