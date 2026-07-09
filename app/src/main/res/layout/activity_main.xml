@@ -13,12 +13,12 @@
         android:layout_height="wrap_content"
         android:text="DroidCraft Timer"
         android:textColor="#BB86FC"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -36,18 +36,21 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="60dp"
             android:text="Start"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="#03DAC5" />
+            android:backgroundTint="#03DAC5"
+            android:layout_marginEnd="8dp" />
 
         <Button
-            android:id="@+id/btnSoundToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SFX On"
-            android:backgroundTint="#3700B3" />
+            android:id="@+id/btnStop"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="60dp"
+            android:text="Stop"
+            android:backgroundTint="#CF6679"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <TextView
@@ -65,25 +68,34 @@
         android:gravity="center">
 
         <View
-            android:id="@+id/colorRed"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#CF6679" />
-
-        <View
             android:id="@+id/colorBlue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#03DAC5" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_margin="8dp" />
 
         <View
-            android:id="@+id/colorGold"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#FFD700" />
+            android:id="@+id/colorGreen"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/holo_green_light"
+            android:layout_margin="8dp" />
+
+        <View
+            android:id="@+id/colorRed"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/holo_red_light"
+            android:layout_margin="8dp" />
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/soundToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable Sound Effects"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="32dp"
+        android:checked="true" />
 
 </LinearLayout>
