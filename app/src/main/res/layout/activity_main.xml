@@ -11,14 +11,14 @@
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
-        android:textColor="#00E676"
-        android:textSize="28sp"
+        android:text="Dynamic Timer Hub"
+        android:textColor="#00E5FF"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownDisplay"
+        android:id="@+id/countdownTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -35,54 +35,29 @@
         android:layout_marginBottom="32dp">
 
         <Button
-            android:id="@+id/btnStart"
+            android:id="@+id/btnColorPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start"
+            android:text="Pick Color"
+            android:backgroundTint="#3D5AFE"
             android:layout_marginEnd="16dp" />
 
         <Button
             android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Audio FX" />
+            android:text="Toggle Sound"
+            android:backgroundTint="#2979FF" />
+
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Interface Theme"
-        android:textColor="#808080"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:id="@+id/colorPickerContainer"
+    <Button
+        android:id="@+id/btnStartTimer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <View
-            android:id="@+id/colorOption1"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#FF5252"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorOption2"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#448AFF"
-            android:layout_margin="8dp" />
-
-        <View
-            android:id="@+id/colorOption3"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#00E676"
-            android:layout_margin="8dp" />
-    </LinearLayout>
+        android:layout_height="60dp"
+        android:text="START COUNTDOWN"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#00E676" />
 
 </LinearLayout>
