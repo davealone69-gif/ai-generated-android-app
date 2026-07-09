@@ -5,20 +5,20 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#121212">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dynamic Timer"
-        android:textColor="#00E5FF"
-        android:textSize="28sp"
+        android:text="DroidCraft Timer"
+        android:textColor="#BB86FC"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/timerDisplay"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -36,25 +36,24 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#03DAC5" />
 
         <Button
             android:id="@+id/btnSoundToggle"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SFX: ON"
-            android:layout_marginStart="8dp" />
+            android:text="SFX On"
+            android:backgroundTint="#3700B3" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Accent"
+        android:text="Theme Selector"
         android:textColor="#888888"
         android:layout_marginBottom="16dp" />
 
@@ -69,22 +68,22 @@
             android:id="@+id/colorRed"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/holo_red_dark"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:background="#CF6679" />
 
         <View
             android:id="@+id/colorBlue"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/holo_blue_dark"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:background="#03DAC5" />
 
         <View
-            android:id="@+id/colorGreen"
+            android:id="@+id/colorGold"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/holo_green_dark"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:background="#FFD700" />
     </LinearLayout>
 
 </LinearLayout>
