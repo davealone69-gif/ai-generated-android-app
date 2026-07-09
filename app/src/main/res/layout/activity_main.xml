@@ -5,20 +5,20 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DroidCraft Timer"
-        android:textColor="#BB86FC"
+        android:textColor="#00E5FF"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/timerDisplay"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -45,15 +45,15 @@
             android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sound On"
-            android:backgroundTint="#03DAC5" />
+            android:text="Sound: ON" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Color Picker"
+        android:text="Accent Color Picker"
         android:textColor="#888888"
+        android:textSize="14sp"
         android:layout_marginBottom="16dp" />
 
     <LinearLayout
@@ -65,24 +65,25 @@
 
         <View
             android:id="@+id/colorRed"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="8dp"
-            android:background="#CF6679" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/holo_red_light"
+            android:layout_margin="8dp" />
+
+        <View
+            android:id="@+id/colorGreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/holo_green_light"
+            android:layout_margin="8dp" />
 
         <View
             android:id="@+id/colorBlue"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="8dp"
-            android:background="#03DAC5" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_margin="8dp" />
 
-        <View
-            android:id="@+id/colorGold"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="8dp"
-            android:background="#FDD835" />
     </LinearLayout>
 
 </LinearLayout>
