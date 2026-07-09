@@ -5,20 +5,20 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DroidCraft Timer"
-        android:textColor="#BB86FC"
-        android:textSize="28sp"
+        android:text="Dynamic Timer Hub"
+        android:textColor="#00E5FF"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/tvCountdown"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -27,41 +27,32 @@
         android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btnStartTimer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="32dp">
+        android:layout_height="60dp"
+        android:text="Start Countdown"
+        android:backgroundTint="#00E5FF"
+        android:textColor="#101420"
+        android:layout_marginBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start"
-            android:layout_marginEnd="16dp" />
-
-        <Button
-            android:id="@+id/btnPickColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pick Color"
-            android:backgroundTint="#03DAC5" />
-    </LinearLayout>
-
-    <SeekBar
-        android:id="@+id/soundVolumeBar"
+    <Button
+        android:id="@+id/btnColorPicker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:progress="50" />
+        android:layout_height="60dp"
+        android:text="Change Accent Color"
+        android:backgroundTint="#2D3446"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp" />
 
-    <TextView
+    <Switch
+        android:id="@+id/switchSound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sound Effects Volume"
-        android:textColor="#888888"
-        android:textSize="12sp"
-        android:layout_marginTop="8dp" />
+        android:text="Enable Sound Effects"
+        android:textColor="#8A92A3"
+        android:thumbTint="#00E5FF"
+        android:trackTint="#2D3446"
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>
