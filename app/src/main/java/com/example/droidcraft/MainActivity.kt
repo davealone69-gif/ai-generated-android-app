@@ -1,81 +1,88 @@
 package com.example.droidcraft
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.HapticFeedbackConstants
 import android.widget.Button
 import android.widget.TextView
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var timerText: TextView
+    private lateinit var timerDisplay: TextView
     private lateinit var btnStart: Button
     private lateinit var btnSoundToggle: Button
-    
     private var countDownTimer: CountDownTimer? = null
-    private var clickSound: MediaPlayer? = null
-    private var soundEnabled = true
+    private var isRunning = false
+    private var isSoundEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerText = findViewById(R.id.countdownDisplay)
+        timerDisplay = findViewById(R.id.timerDisplay)
         btnStart = findViewById(R.id.btnStart)
         btnSoundToggle = findViewById(R.id.btnSoundToggle)
 
-        // Initialize sound (ensure click_sound.mp3 exists in res/raw/)
-        clickSound = MediaPlayer.create(this, R.raw.click_sound)
-
         btnStart.setOnClickListener {
-            playSound()
-            startTimer()
+            performFeedback()
+            toggleTimer()
         }
 
         btnSoundToggle.setOnClickListener {
-            soundEnabled = !soundEnabled
-            btnSoundToggle.text = if (soundEnabled) "Sound: ON" else "Sound: OFF"
+            isSoundEnabled = !isSoundEnabled
+            btnSoundToggle.text = if (isSoundEnabled) "Sound: ON" else "Sound: OFF"
+            performFeedback()
         }
 
-        setupColorPickers()
-    }
+        // Setup color picker clicks
+        val colors = intArrayOf(
+            android.graphics.Color.parseColor("#38BDF8"),
+            android.graphics.Color.parseColor("#4ADE80"),
+            android.graphics.Color.parseColor("#FB923C"),
+            android.graphics.Color.parseColor("#F87171")
+        )
 
-    private fun startTimer() {
-        countDownTimer?.cancel()
-        countDownTimer = object : CountDownTimer(30000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val seconds = millisUntilFinished / 1000
-                timerText.text = String.format("00:%02d", seconds)
-            }
-            override fun onFinish() {
-                timerText.text = "Done!"
-            }
-        }.start()
-    }
-
-    private fun setupColorPickers() {
-        val colors = listOf(R.id.colorRed, R.id.colorGreen, R.id.colorBlue)
-        colors.forEach { id ->
-            findViewById<View>(id).setOnClickListener {
-                playSound()
-                timerText.setTextColor((it.background as android.graphics.drawable.ColorDrawable).color)
+        val ids = intArrayOf(R.id.colorOption1, R.id.colorOption2, R.id.colorOption3, R.id.colorOption4)
+        for (i in ids.indices) {
+            findViewById<android.view.View>(ids[i]).setOnClickListener {
+                timerDisplay.setTextColor(colors[i])
+                performFeedback()
             }
         }
     }
 
-    private fun playSound() {
-        if (soundEnabled) {
-            clickSound?.seekTo(0)
-            clickSound?.start()
+    private fun toggleTimer() {
+        if (isRunning) {
+            countDownTimer?.cancel()
+            btnStart.text = "Start"
+            isRunning = false
+        } else {
+            countDownTimer = object : CountDownTimer(1500000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val minutes = (millisUntilFinished / 1000) / 60
+                    val seconds = (millisUntilFinished / 1000) % 60
+                    timerDisplay.text = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                }
+                override fun onFinish() {
+                    timerDisplay.text = "00:00"
+                    isRunning = false
+                    btnStart.text = "Start"
+                }
+            }.start()
+            btnStart.text = "Stop"
+            isRunning = true
+        }
+    }
+
+    private fun performFeedback() {
+        if (isSoundEnabled) {
+            window.decorView.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-        clickSound?.release()
-        clickSound = null
     }
 }
