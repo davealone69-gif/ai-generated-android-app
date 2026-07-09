@@ -5,26 +5,26 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#121212">
+    android:background="#101420">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Focus Timer"
-        android:textColor="#BB86FC"
-        android:textSize="28sp"
+        android:text="DroidCraft Timer"
+        android:textColor="#00E5FF"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/timerDisplay"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="25:00"
+        android:text="00:00"
         android:textColor="#FFFFFF"
         android:textSize="72sp"
-        android:textStyle="bold"
+        android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -36,28 +36,24 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start"
-            android:backgroundTint="#03DAC5"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="16dp" />
 
         <Button
             android:id="@+id/btnSoundToggle"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SFX On"
-            android:backgroundTint="#3700B3"
-            android:layout_marginStart="8dp" />
+            android:text="Toggle Audio" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Accent"
-        android:textColor="#888888"
+        android:text="Select Interface Color"
+        android:textColor="#88FFFFFF"
+        android:textSize="14sp"
         android:layout_marginBottom="16dp" />
 
     <LinearLayout
@@ -68,25 +64,25 @@
         android:gravity="center">
 
         <View
-            android:id="@+id/colorRed"
+            android:id="@+id/colorOptionBlue"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#CF6679" />
+            android:background="#00E5FF"
+            android:layout_margin="8dp" />
 
         <View
-            android:id="@+id/colorBlue"
+            android:id="@+id/colorOptionGreen"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#03DAC5" />
+            android:background="#00FF88"
+            android:layout_margin="8dp" />
 
         <View
-            android:id="@+id/colorPurple"
+            android:id="@+id/colorOptionRed"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="8dp"
-            android:background="#BB86FC" />
+            android:background="#FF4081"
+            android:layout_margin="8dp" />
     </LinearLayout>
 
 </LinearLayout>
