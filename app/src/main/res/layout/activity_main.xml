@@ -5,20 +5,20 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#121212">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dynamic Timer Hub"
-        android:textColor="#00E5FF"
+        android:text="DroidCraft Timer"
+        android:textColor="#BB86FC"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/countdownTimer"
+        android:id="@+id/tvCountdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
@@ -27,37 +27,59 @@
         android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="32dp">
-
-        <Button
-            android:id="@+id/btnColorPicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pick Color"
-            android:backgroundTint="#3D5AFE"
-            android:layout_marginEnd="16dp" />
-
-        <Button
-            android:id="@+id/btnSoundToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Toggle Sound"
-            android:backgroundTint="#2979FF" />
-
-    </LinearLayout>
-
     <Button
         android:id="@+id/btnStartTimer"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="60dp"
-        android:text="START COUNTDOWN"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#00E676" />
+        android:text="Start Timer"
+        android:backgroundTint="#03DAC5"
+        android:textColor="#000000"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Theme Color"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="12dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnColorRed"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:background="#CF6679" />
+
+        <ImageButton
+            android:id="@+id/btnColorBlue"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:background="#03A9F4" />
+
+        <ImageButton
+            android:id="@+id/btnColorGreen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:background="#4CAF50" />
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/switchSound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sound Effects Enabled"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="32dp"
+        android:checked="true"
+        android:thumbTint="#BB86FC" />
 
 </LinearLayout>
