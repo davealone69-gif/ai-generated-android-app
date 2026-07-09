@@ -11,9 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView timerText;
-    private Button btnStartTimer;
-    private Button btnChangeColor;
+    private TextView tvTimer, tvHeader;
+    private Button btnStart, btnChangeColor;
     private CountDownTimer countDownTimer;
     private MediaPlayer clickSound;
 
@@ -22,25 +21,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        timerText = findViewById(R.id.timerText);
-        btnStartTimer = findViewById(R.id.btnStartTimer);
+        tvTimer = findViewById(R.id.tvTimer);
+        tvHeader = findViewById(R.id.titleHeader);
+        btnStart = findViewById(R.id.btnStart);
         btnChangeColor = findViewById(R.id.btnChangeColor);
+        
+        clickSound = MediaPlayer.create(this, R.raw.click_effect);
 
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
-
-        btnStartTimer.setOnClickListener(new View.OnClickListener() {
+        btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playSound();
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                 }
-                countDownTimer = new CountDownTimer(10000, 1000) {
+                countDownTimer = new CountDownTimer(30000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        timerText.setText("Time: " + millisUntilFinished / 1000);
+                        tvTimer.setText("Time: " + millisUntilFinished / 1000);
                     }
                     public void onFinish() {
-                        timerText.setText("Done!");
+                        tvTimer.setText("Done!");
                     }
                 }.start();
             }
@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 playSound();
                 Random rnd = new Random();
                 int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                timerText.setTextColor(color);
-                v.setBackgroundColor(color);
+                tvHeader.setTextColor(color);
+                tvTimer.setTextColor(color);
             }
         });
     }
