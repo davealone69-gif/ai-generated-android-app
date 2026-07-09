@@ -24,36 +24,38 @@ public class MainActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
         btnColor = findViewById(R.id.btnColor);
-        
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                if (countDownTimer != null) countDownTimer.cancel();
-                
-                countDownTimer = new CountDownTimer(30000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        timerText.setText("Seconds remaining: " + millisUntilFinished / 1000);
-                    }
-                    public void onFinish() {
-                        timerText.setText("Done!");
-                    }
-                }.start();
-            }
+        clickSound = MediaPlayer.create(this, R.raw.click_effect);
+
+        btnStart.setOnClickListener(v -> {
+            playSound();
+            startCountdown(60000);
         });
 
-        btnColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSound();
-                Random rnd = new Random();
-                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                timerText.setTextColor(color);
-                findViewById(R.id.mainLayout).setBackgroundColor(color + 0x20000000);
-            }
+        btnColor.setOnClickListener(v -> {
+            playSound();
+            changeBackgroundColor();
         });
+    }
+
+    private void startCountdown(long duration) {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        countDownTimer = new CountDownTimer(duration, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timerText.setText("Time: " + millisUntilFinished / 1000);
+            }
+            public void onFinish() {
+                timerText.setText("Done!");
+            }
+        }.start();
+    }
+
+    private void changeBackgroundColor() {
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        findViewById(R.id.mainLayout).setBackgroundColor(color);
     }
 
     private void playSound() {
@@ -65,12 +67,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (clickSound != null) {
-            clickSound.release();
-            clickSound = null;
-        }
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+        if (countDownTimer != null) countDownTimer.cancel();
+        if (clickSound != null) clickSound.release();
     }
 }
