@@ -18,13 +18,13 @@
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/timerDisplay"
+        android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
         android:textSize="72sp"
-        android:textStyle="monospace"
+        android:fontFamily="sans-serif-light"
         android:layout_marginBottom="48dp" />
 
     <LinearLayout
@@ -47,55 +47,45 @@
             android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Toggle Sound"
-            android:backgroundTint="#CF6679" />
+            android:text="SFX On"
+            android:backgroundTint="#3700B3"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Theme Accent Color"
-        android:textColor="#808080"
+        android:text="Select Theme Color"
+        android:textColor="#AAAAAA"
         android:layout_marginBottom="16dp" />
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
 
-        <LinearLayout
-            android:id="@+id/colorPickerContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <View
+            android:id="@+id/colorOption1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#FF5252" />
 
-            <View
-                android:id="@+id/colorOption1"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:background="#BB86FC" />
+        <View
+            android:id="@+id/colorOption2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#448AFF" />
 
-            <View
-                android:id="@+id/colorOption2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:background="#03DAC5" />
-
-            <View
-                android:id="@+id/colorOption3"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:background="#CF6679" />
-
-            <View
-                android:id="@+id/colorOption4"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:background="#FFEB3B" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <View
+            android:id="@+id/colorOption3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:background="#69F0AE" />
+    </LinearLayout>
 
 </LinearLayout>
