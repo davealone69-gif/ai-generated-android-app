@@ -5,25 +5,25 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center_horizontal"
-    android:background="#101420">
+    android:background="#121212">
 
     <TextView
         android:id="@+id/titleHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DroidCraft Timer"
-        android:textColor="#00E676"
+        android:textColor="#BB86FC"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/tvCountdown"
+        android:id="@+id/timerDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
-        android:textSize="64sp"
+        android:textSize="72sp"
         android:textStyle="monospace"
         android:layout_marginBottom="48dp" />
 
@@ -35,29 +35,67 @@
         android:layout_marginBottom="32dp">
 
         <Button
-            android:id="@+id/btnColorPicker"
+            android:id="@+id/btnStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Color"
-            android:backgroundTint="#37474F"
+            android:text="Start"
+            android:backgroundTint="#03DAC5"
+            android:textColor="#000000"
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnToggleSound"
+            android:id="@+id/btnSoundToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Toggle Sound"
-            android:backgroundTint="#37474F" />
-
+            android:backgroundTint="#CF6679" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnStartTimer"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Theme Accent Color"
+        android:textColor="#808080"
+        android:layout_marginBottom="16dp" />
+
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="START COUNTDOWN"
-        android:textSize="16sp"
-        android:backgroundTint="#00E676"
-        android:textColor="#000000" />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/colorPickerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/colorOption1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#BB86FC" />
+
+            <View
+                android:id="@+id/colorOption2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#03DAC5" />
+
+            <View
+                android:id="@+id/colorOption3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#CF6679" />
+
+            <View
+                android:id="@+id/colorOption4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="8dp"
+                android:background="#FFEB3B" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </LinearLayout>
