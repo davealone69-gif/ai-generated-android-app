@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         btnStart = findViewById(R.id.btnStart);
         btnColor = findViewById(R.id.btnColor);
-
-        clickSound = MediaPlayer.create(this, R.raw.click_sound);
+        
+        clickSound = MediaPlayer.create(this, R.raw.click_effect);
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
